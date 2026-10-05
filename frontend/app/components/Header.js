@@ -8,6 +8,7 @@ const LINKS = [
   ["/", "Home"],
   ["/explore", "Explore"],
   ["/submit", "Submit"],
+  ["/dashboard", "Dashboard"],
   ["/leaderboard", "Leaderboard"],
   ["/contract", "Contract"],
 ];
