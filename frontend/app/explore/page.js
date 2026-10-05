@@ -13,6 +13,7 @@ import {
   fetchTopics,
   formatWeiToGen,
   parseGenToWei,
+  shortAddr,
   waitFinalizedChecked,
 } from "../../lib/genlayer";
 

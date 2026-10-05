@@ -167,7 +167,7 @@ AGENTS.md (file ini)
 
 ## 7. Deploy Studionet (wallet `D:\Genlayer-project\weels\contract\wallet`)
 
-* Wallet: `cpe-deploy` (`0xD0B8fFA6ea2572D2a8F16512CAbB21eCFe6ea48b`, keystore `cpe-deploy.json` + raw key `cpe-deploy-key.json`). SEMUA deploy/call/write WAJIB pakai wallet ini (CLI: akun aktif `cpe-deploy`; JS: `createAccount(w.privateKey)` dari `cpe-deploy-key.json`). Jangan pakai wallet lain.
+* Wallet: `cpe-deploy` (`0xD0B8fFA6ea2572D2a8F16512CAbB21eCFe6ea48b`, keystore `cpe-deploy.json` + raw key `cpe-deploy-key.json`). SEMUA deploy/call/write WAJIB pakai wallet ini (CLI: akun aktif `cpe-deploy`; JS: `createAccount(w.privateKey)` dari `cpe-deploy-key.json`). Jangan pakai wallet lain. Dikonfirmasi 2026-10-05: `from_address` semua receipt = wallet ini; `D:\Genlayer-project\contract\.wallets\studionet.json` (0x6464...) TIDAK pernah dipakai.
 * **HEMAT balance GEN (aturan 2026-10-04):** uji gratis dulu (direct test, CLI read); write live seperlunya; stake bebas ≥10 wei (min stake); fund pool hanya bila perlu klaim; tarik kembali pool idle via `withdraw_pool` bila wallet menipis.
 * Network: `studionet` (sudah `genlayer network set studionet`). Rate-limit: throttle, tunggu receipt antar tx.
 * Kontrak v1 (bug `get_entry` int-vs-str): `0x38143004586Bc5e9D7e9b41aFC44d881F34Aa2C1` — submit OK, `get_entry` ERROR `TypeError '<' int vs str` (CLI kirim `"0"` sebagai int). Fix: `entry_id = str(entry_id)` di `verify_entry`/`get_entry`, `topic = str(topic)` di `get_entries_by_topic` (defensive coercion sesuai docs crafting-prompts).
