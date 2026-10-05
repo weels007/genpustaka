@@ -118,7 +118,7 @@ Fase berikutnya (JANGAN dikerjakan sebelum MVP final):
 contracts/genpustaka.py
 tests/direct/test_knowledge.py
 tests/integration/test_knowledge.py
-frontend/ (Next.js 16 App Router + genlayer-js: `/` hero+stats, `/submit`, `/explore`, `/leaderboard`, `/contract`, shared `Header`, lib/genlayer.js, public/landing.html statis cadangan)
+frontend/ (Next.js 16 App Router + genlayer-js: `/` hero+stats, `/submit`, `/explore`, `/dashboard`, `/leaderboard`, `/contract`, shared `Header`, lib/genlayer.js, public/landing.html statis cadangan)
 deploy/
 gltest.config.yaml
 AGENTS.md (file ini)
@@ -161,11 +161,12 @@ AGENTS.md (file ini)
 | 2026-10-04 | Init git + push ke `weels007/genpustaka` + panduan Vercel | `.gitignore` (node_modules, artifacts, env/keys — wallet di luar repo, cek grep bersih), commit awal + push `main`. Vercel: Root Directory `frontend`, preset Next.js, tanpa env var (tertulis di README) |
 | 2026-10-04 | Tombol explorer → halaman kontrak (`/address/<addr>`, bukan web Studio) | Format sesuai sibling (`explorer-studio…/address/…`); helper `explorerAddressUrl()` di lib; badge README ikut. Build OK, serve 200 |
 | 2026-10-04 | Wallet-only writes: field burner key + warning dihapus total dari `/submit` | Tanpa connect = tombol disabled, signer lempar error. Tanpa sisa referensi key di app. Build OK |
+| 2026-10-04 | Dashboard per-user (`/dashboard`): profile + 8 stat (submitted/verified/rejected/pending/earned/now/staked/pool) + history + claim pindah dari leaderboard | Claim/aksi hanya render bila wallet connect (SSR aman). Leaderboard murni peringkat. Nav +1. Build OK, serve 200 |
 
 ## 7. Deploy Studionet (wallet `D:\Genlayer-project\weels\contract\wallet`)
 
 * Wallet: `cpe-deploy` (`0xD0B8fFA6ea2572D2a8F16512CAbB21eCFe6ea48b`, keystore `cpe-deploy.json` + raw key `cpe-deploy-key.json`). SEMUA deploy/call/write WAJIB pakai wallet ini (CLI: akun aktif `cpe-deploy`; JS: `createAccount(w.privateKey)` dari `cpe-deploy-key.json`). Jangan pakai wallet lain.
-* **HEMAT balance GEN (aturan 2026-10-04):** uji gratis dulu (direct test, CLI read); write live seperlunya; stake tetap 100 wei; fund pool hanya bila perlu klaim; tarik kembali pool idle via `withdraw_pool` bila wallet menipis. Posisi 2026-10-04: wallet ±1010 wei, kontrak 140 (pool 140).
+* **HEMAT balance GEN (aturan 2026-10-04):** uji gratis dulu (direct test, CLI read); write live seperlunya; stake bebas ≥10 wei (min stake); fund pool hanya bila perlu klaim; tarik kembali pool idle via `withdraw_pool` bila wallet menipis.
 * Network: `studionet` (sudah `genlayer network set studionet`). Rate-limit: throttle, tunggu receipt antar tx.
 * Kontrak v1 (bug `get_entry` int-vs-str): `0x38143004586Bc5e9D7e9b41aFC44d881F34Aa2C1` — submit OK, `get_entry` ERROR `TypeError '<' int vs str` (CLI kirim `"0"` sebagai int). Fix: `entry_id = str(entry_id)` di `verify_entry`/`get_entry`, `topic = str(topic)` di `get_entries_by_topic` (defensive coercion sesuai docs crafting-prompts).
 * Kontrak v2 FINAL: `0x8349AD21303Fd348A9002B221E07644E7d5D28bd` (deploy `0x1953f29d...`, MAJORITY_AGREE).
