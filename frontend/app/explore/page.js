@@ -188,7 +188,7 @@ export default function ExplorePage() {
                       >
                         {acting === String(e.id) ? "Verifying…" : "Verify"}
                       </button>
-                      {Number(e.stake) === 0 && (
+                      {Number(e.stake ?? 0) === 0 && (
                         <>
                           <input
                             value={stakeAmts[String(e.id)] ?? "0.02"}
