@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { CONTRACT_ADDR, explorerAddressUrl, fetchConfig, fetchCount, fetchProject, formatWeiToGen } from "../../lib/genlayer";
 
 export default function ContractPage() {
@@ -62,7 +63,7 @@ export default function ContractPage() {
           <div className="status">{msg}</div>
         </div>
       </section>
-      <footer>GenPustaka — crowd-sourced knowledge, verified by AI consensus on GenLayer.</footer>
+      <Footer />
     </>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { RPC_URL, diagnoseRpc, fetchBoard, fetchByTopic, fetchCount, fetchProject } from "../lib/genlayer";
 
 const TOPICS = [
@@ -262,7 +263,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer>GenPustaka — crowd-sourced knowledge, verified by AI consensus on GenLayer.</footer>
+      <Footer />
     </>
   );
 }

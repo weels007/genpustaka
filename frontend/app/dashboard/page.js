@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useWallet } from "../../lib/wallet";
 import {
   ABIS,
@@ -215,7 +216,7 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
-      <footer>GenPustaka — crowd-sourced knowledge, verified by AI consensus on GenLayer.</footer>
+      <Footer />
     </>
   );
 }

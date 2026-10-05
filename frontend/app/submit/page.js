@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useWallet } from "../../lib/wallet";
 import {
   ABIS,
@@ -122,10 +123,10 @@ export default function SubmitPage() {
           <label className="lbl">Summary (min 20 chars, faithful to the source)</label>
           <textarea value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} placeholder="Summarize what is new in the source…" />
           <div className="row">
-            <button type="button" className="btn" disabled={busy || !walletAddr} onClick={onSubmit}>
+            <button type="button" className="btn" disabled={busy || !walletAddr} onClick={onSubmit} title={!walletAddr ? "Connect a wallet from the header to enable" : undefined}>
               {phase === "submitting" ? "Submitting…" : "Submit entry"}
             </button>
-            <button type="button" className="btn ghost" disabled={busy || lastId === null || !walletAddr} onClick={onVerify}>
+            <button type="button" className="btn ghost" disabled={busy || lastId === null || !walletAddr} onClick={onVerify} title={!walletAddr ? "Connect a wallet from the header to enable" : undefined}>
               {phase === "verifying" ? "Verifying…" : "Verify last entry"}
             </button>
             <Link href="/" className="btn ghost" style={{ textDecoration: "none", display: "inline-block" }}>← Back home</Link>
@@ -134,7 +135,7 @@ export default function SubmitPage() {
         </div>
       </section>
 
-      <footer>GenPustaka — crowd-sourced knowledge, verified by AI consensus on GenLayer.</footer>
+      <Footer />
     </>
   );
 }

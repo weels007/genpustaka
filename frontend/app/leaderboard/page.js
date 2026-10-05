@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { fetchBoard, shortAddr } from "../../lib/genlayer";
 
 export default function LeaderboardPage() {
@@ -54,7 +55,7 @@ export default function LeaderboardPage() {
           </table>
         </div>
       </section>
-      <footer>GenPustaka — crowd-sourced knowledge, verified by AI consensus on GenLayer.</footer>
+      <Footer />
     </>
   );
 }

@@ -2,6 +2,7 @@ import { createClient, chains, createAccount } from "genlayer-js";
 import { ExecutionResult } from "genlayer-js/types";
 
 export const CONTRACT_ADDR = "0x8556f5c750D7508D20CaF94C43a4dA009F362dfc";
+export const BUILD_ID = "2026-10-05d";
 export const RPC_URL = "https://studio.genlayer.com/api";
 
 // Raw JSON-RPC connectivity probe (no SDK): distinguishes network/CORS
