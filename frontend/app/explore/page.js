@@ -17,6 +17,10 @@ import {
   waitFinalizedChecked,
 } from "../../lib/genlayer";
 
+// Submit form only allows these topics, so they always exist as tabs —
+// this also surfaces PENDING entries that get_topics (verified-only) hides.
+const MAIN_TOPICS = ["Web", "AI", "Crypto"];
+
 export default function ExplorePage() {
   const { address, getWriteClient } = useWallet();
   const [topics, setTopics] = useState([]);
@@ -67,7 +71,9 @@ export default function ExplorePage() {
   async function init() {
     try {
       const t = await fetchTopics();
-      const names = (t.topics || []).map(String);
+      // Union of on-chain topics + known main topics: get_topics only counts
+      // VERIFIED entries, so pending ones would otherwise be invisible.
+      const names = [...new Set([...(t.topics || []).map(String), ...MAIN_TOPICS])];
       setTopics(names);
       await load("All", names);
     } catch (e) {
