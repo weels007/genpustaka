@@ -157,7 +157,7 @@ def test_pending_cap(direct_vm, direct_deploy, direct_alice):
     contract = _deploy_fresh(direct_vm, direct_deploy, direct_alice)
 
     for i in range(3):
-        contract.submit_entry("AI", f"https://example.com/cap-{i}", "Ringkasan spam yang cukup panjang untuk lolos validasi.")
+        contract.submit_entry("AI", f"https://example.com/cap-{i}", f"Ringkasan spam {i} yang cukup panjang untuk lolos validasi.")
     assert int(contract.get_pending_count(direct_alice)) == 3
 
     with direct_vm.expect_revert("Too many pending"):
@@ -341,6 +341,50 @@ def test_source_unavailable_404(direct_vm, direct_deploy, direct_alice):
     # Failed verification changes nothing.
     assert contract.get_entry("0")["status"] == "pending"
     direct_vm.clear_mocks()
+
+
+def test_url_variant_farming_blocked(direct_vm, direct_deploy, direct_alice):
+    contract = _deploy_fresh(direct_vm, direct_deploy, direct_alice)
+    contract.submit_entry("Web", "https://example.com/", "Ringkasan web pertama yang cukup panjang untuk lolos.")
+
+    variants = [
+        "https://example.com?e2e=1",
+        "https://example.com#frag",
+        "https://example.com/?a=b#frag",
+        "HTTP://EXAMPLE.COM",
+        "http://example.com",
+    ]
+    for i, url in enumerate(variants):
+        with direct_vm.expect_revert("already submitted"):
+            contract.submit_entry("Web", url, f"Ringkasan farming {i} yang cukup panjang untuk lolos.")
+
+    # A genuinely different URL still passes.
+    eid = contract.submit_entry("Web", "https://example.com/other-page", "Ringkasan beda halaman yang cukup panjang untuk lolos.")
+    assert eid == "1"
+
+
+def test_identical_summary_blocked(direct_vm, direct_deploy, direct_alice):
+    contract = _deploy_fresh(direct_vm, direct_deploy, direct_alice)
+    summary = "Ringkasan sama persis yang cukup panjang untuk lolos validasi input."
+    contract.submit_entry("Web", "https://example.com/page-a", summary)
+    with direct_vm.expect_revert("Identical summary"):
+        contract.submit_entry("AI", "https://example.com/page-b", "  " + summary.upper() + "  ")
+
+    # Different wording passes.
+    eid = contract.submit_entry("AI", "https://example.com/page-b", "Ringkasan yang sama sekali berbeda dan cukup panjang.")
+    assert eid == "1"
+
+
+def test_cancel_frees_both_indexes(direct_vm, direct_deploy, direct_alice):
+    contract = _deploy_fresh(direct_vm, direct_deploy, direct_alice)
+    url = "https://example.com/temp?x=1"
+    summary = "Ringkasan sementara yang cukup panjang untuk lolos validasi."
+    eid = contract.submit_entry("Web", url, summary)
+    assert contract.cancel_entry(eid) == eid
+
+    # Same canonical URL and same wording can be submitted again after cancel.
+    eid2 = contract.submit_entry("Web", "https://example.com/temp", summary)
+    assert eid2 == "1"
 
 
 STAKE = 2 * 10**16  # 0.02 GEN (>= MIN_STAKE of 0.01 GEN)

@@ -8,7 +8,7 @@
 and summarizing new information — every entry verified by decentralized AI consensus.**
 
 [![GenLayer](https://img.shields.io/badge/GenLayer-studionet-0b8a78)](https://docs.genlayer.com/)
-[![Contract](https://img.shields.io/badge/contract-0x25D7…f71E9b1-4e3204)](https://explorer-studio.genlayer.com/address/0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1)
+[![Contract](https://img.shields.io/badge/contract-0x8556…62dfc-4e3204)](https://explorer-studio.genlayer.com/address/0x8556f5c750D7508D20CaF94C43a4dA009F362dfc)
 [![Tests](https://img.shields.io/badge/direct--tests-21_passed-0b8a78)](#development)
 [![Frontend](https://img.shields.io/badge/frontend-Next.js_16-black)](#dapp)
 
@@ -78,8 +78,8 @@ forces agreement), and the verdict must be bound to the submitted `source_url`.
 
 Network: **GenLayer studionet**.
 
-**Contract:** `0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1`
-([view in explorer](https://explorer-studio.genlayer.com/address/0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1))
+**Contract:** `0x8556f5c750D7508D20CaF94C43a4dA009F362dfc`
+([view in explorer](https://explorer-studio.genlayer.com/address/0x8556f5c750D7508D20CaF94C43a4dA009F362dfc))
 
 Deploys and writes use the project's private deployer wallet (kept out of this
 repo). `get_project` answers `GenPustaka`.

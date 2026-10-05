@@ -11,7 +11,7 @@ ERROR_TRANSIENT = "[TRANSIENT]"
 ERROR_LLM = "[LLM_ERROR]"
 
 PROJECT_NAME = "GenPustaka"
-PROJECT_VERSION = "7"
+PROJECT_VERSION = "8"
 
 # Tokenomics in whole GEN units, stored as wei (1 GEN = 10**18 wei).
 # Stake is a free-amount confidence bond: any value >= MIN_STAKE.
@@ -164,6 +164,37 @@ def _handle_leader_error(leaders_res: object, leader_fn: object) -> bool:
         return False
 
 
+def _canonical_url(url: object) -> str:
+    """Normalize a URL for duplicate detection: strip query/fragment,
+    lowercase scheme+host, unify http->https, drop trailing slashes."""
+    u = str(url).strip()
+    h = u.find("#")
+    if h != -1:
+        u = u[:h]
+    q = u.find("?")
+    if q != -1:
+        u = u[:q]
+    sep = u.find("://")
+    if sep != -1:
+        scheme = u[:sep].lower()
+        if scheme == "http":
+            scheme = "https"
+        rest = u[sep + 3:]
+        slash = rest.find("/")
+        if slash == -1:
+            u = scheme + "://" + rest.lower()
+        else:
+            u = scheme + "://" + rest[:slash].lower() + rest[slash:]
+    while len(u) > 8 and u.endswith("/"):
+        u = u[:-1]
+    return u
+
+
+def _normalize_summary(summary: object) -> str:
+    """Lowercase + collapse whitespace for exact-duplicate detection."""
+    return " ".join(str(summary).strip().lower().split())
+
+
 class GenPustaka(gl.Contract):
     owner: Address
     entries: TreeMap[str, Entry]
@@ -177,6 +208,7 @@ class GenPustaka(gl.Contract):
     appeal_fee: u256
     max_pending: u256
     pool: u256
+    summary_index: TreeMap[str, str]
 
     def __init__(self):
         self.owner = gl.message.sender_address
@@ -191,7 +223,7 @@ class GenPustaka(gl.Contract):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} Topic cannot be empty")
         if len(topic) > 100:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} Topic too long (max 100)")
-        if not isinstance(url, str) or not (url.startswith("http://") or url.startswith("https://")):
+        if not isinstance(url, str) or not (url.strip().lower().startswith("http://") or url.strip().lower().startswith("https://")):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} URL must start with http:// or https://")
         if len(url) > 500:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} URL too long (max 500)")
@@ -201,8 +233,12 @@ class GenPustaka(gl.Contract):
             raise gl.vm.UserError(f"{ERROR_EXPECTED} Summary too long (max 2000 chars)")
 
         clean_url = url.strip()
-        if clean_url in self.url_index:
+        canon_url = _canonical_url(clean_url)
+        if canon_url in self.url_index:
             raise gl.vm.UserError(f"{ERROR_EXPECTED} URL already submitted: {clean_url}")
+        norm_summary = _normalize_summary(summary)
+        if norm_summary in self.summary_index:
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} Identical summary already submitted")
 
         author = gl.message.sender_address
         author_key = _addr_key(author)
@@ -223,7 +259,8 @@ class GenPustaka(gl.Contract):
         )
         self.entries[entry_id] = entry
         self.entry_ids.append(entry_id)
-        self.url_index[clean_url] = entry_id
+        self.url_index[canon_url] = entry_id
+        self.summary_index[norm_summary] = entry_id
         self.pending_counts[author_key] = int(self.pending_counts.get(author_key, 0)) + 1
         self.next_id = self.next_id + 1
         return entry_id
@@ -279,6 +316,8 @@ Decide:
 1. is_novel: true if the summary adds information not already covered above, else false.
 2. is_faithful: true if the summary is grounded in the source page and has no hallucinated facts, else false.
 3. score: integer 0-10 for overall quality (0 = reject, 10 = excellent). Be strict.
+   If the source page itself holds almost no information (placeholder, stub,
+   or boilerplate-only page), the summary cannot be high quality: cap score at 4.
 4. analysis: one or two sentences of reasoning.
 
 Return ONLY JSON with keys: is_novel (bool), is_faithful (bool), score (int), analysis (str)."""
@@ -488,9 +527,12 @@ Return ONLY JSON with keys: is_novel (bool), is_faithful (bool), score (int), an
         self.entries[entry_id] = cancelled
         pending = int(self.pending_counts.get(caller_key, 0))
         self.pending_counts[caller_key] = pending - 1 if pending > 0 else 0
-        url_key = str(e.url)
+        url_key = _canonical_url(str(e.url))
         if url_key in self.url_index:
             del self.url_index[url_key]
+        norm_key = _normalize_summary(str(e.summary))
+        if norm_key in self.summary_index:
+            del self.summary_index[norm_key]
         return entry_id
 
     @gl.public.view
