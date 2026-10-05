@@ -6,12 +6,13 @@ import { useWallet } from "../../lib/wallet";
 import {
   ABIS,
   CONTRACT_ADDR,
-  MIN_STAKE,
+  MIN_STAKE_WEI,
   fetchByAuthor,
   fetchByTopic,
   fetchEntry,
   fetchTopics,
-  shortAddr,
+  formatWeiToGen,
+  parseGenToWei,
   waitFinalizedChecked,
 } from "../../lib/genlayer";
 
@@ -116,12 +117,12 @@ export default function ExplorePage() {
   async function onAppeal(id) { await act(id, "appeal", "Appealing (fee 2 pts)"); }
   async function onVerify(id) { await act(id, "verify", "Verifying"); }
   async function onStake(id) {
-    const raw = (stakeAmts[id] ?? MIN_STAKE).toString();
+    const raw = stakeAmts[id] ?? "0.02";
     let amt;
-    try { amt = BigInt(raw); } catch { setMsg("Stake amount must be a whole wei number."); return; }
-    if (amt < MIN_STAKE) { setMsg(`Minimum stake is ${MIN_STAKE.toString()} wei.`); return; }
-    setStakeAmts((m) => ({ ...m, [id]: amt }));
-    await act(id, "stake", `Staking ${amt.toString()} wei`, amt);
+    try { amt = parseGenToWei(raw); } catch (e) { setMsg(String(e.message)); return; }
+    if (amt < MIN_STAKE_WEI) { setMsg(`Minimum stake is ${formatWeiToGen(MIN_STAKE_WEI)} GEN.`); return; }
+    await act(id, "stake", `Staking ${formatWeiToGen(amt)} GEN`, amt);
+    setStakeAmts((m) => { const n = { ...m }; delete n[id]; return n; });
   }
 
   useEffect(() => { init(); }, []);
@@ -161,7 +162,7 @@ export default function ExplorePage() {
                   <span className="tag pending" style={{ background: "rgba(252,211,77,0.2)", color: "#fde68a" }}>appealed ×{e.appeals.toString()}</span>
                 )}
                 {Number(e.stake) > 0 && (
-                  <span className="tag pending" style={{ background: "rgba(126,240,212,0.2)", color: "#7ef0d4" }}>staked {e.stake.toString()} wei</span>
+                  <span className="tag pending" style={{ background: "rgba(126,240,212,0.2)", color: "#7ef0d4" }}>staked {formatWeiToGen(e.stake)} GEN</span>
                 )}
                 <span className="entry-id">#{e.id}</span>
               </div>
@@ -189,12 +190,12 @@ export default function ExplorePage() {
                       {Number(e.stake) === 0 && (
                         <>
                           <input
-                            value={(stakeAmts[String(e.id)] ?? MIN_STAKE).toString()}
+                            value={stakeAmts[String(e.id)] ?? "0.02"}
                             onChange={(ev) => setStakeAmts((m) => ({ ...m, [String(e.id)]: ev.target.value }))}
-                            placeholder="wei"
-                            inputMode="numeric"
+                            placeholder="GEN"
+                            inputMode="decimal"
                             style={{ maxWidth: 110 }}
-                            aria-label="Stake amount in wei"
+                            aria-label="Stake amount in GEN"
                           />
                           <button
                             type="button"
@@ -202,9 +203,9 @@ export default function ExplorePage() {
                             style={{ padding: "0.4rem 1rem", fontSize: "0.78rem" }}
                             disabled={acting !== null}
                             onClick={() => onStake(e.id)}
-                            title={`Locks any amount ≥ ${MIN_STAKE.toString()} wei until verified`}
+                            title={`Locks any amount ≥ ${formatWeiToGen(MIN_STAKE_WEI)} GEN until verified`}
                           >
-                            {acting === String(e.id) ? "Staking…" : "Stake"}
+                            {acting === String(e.id) ? "Staking…" : "Stake GEN"}
                           </button>
                         </>
                       )}

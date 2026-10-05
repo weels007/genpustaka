@@ -8,7 +8,7 @@
 and summarizing new information — every entry verified by decentralized AI consensus.**
 
 [![GenLayer](https://img.shields.io/badge/GenLayer-studionet-0b8a78)](https://docs.genlayer.com/)
-[![Contract](https://img.shields.io/badge/contract-0x4941…6369-4e3204)](https://explorer-studio.genlayer.com/address/0x4941960FFa8188008Def7536A3cBf95Abd156369)
+[![Contract](https://img.shields.io/badge/contract-0x25D7…f71E9b1-4e3204)](https://explorer-studio.genlayer.com/address/0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1)
 [![Tests](https://img.shields.io/badge/direct--tests-21_passed-0b8a78)](#development)
 [![Frontend](https://img.shields.io/badge/frontend-Next.js_16-black)](#dapp)
 
@@ -39,7 +39,7 @@ No oracles, no moderators — judgment is trustless.
 submit_entry(topic, url, summary) ──▶ pending
         │  duplicate URL rejected · max 3 pending/author
         ▼
-stake_for(entry) +100 wei (optional escrow)
+stake_for(entry), any amount >= 0.01 GEN (optional escrow)
         ▼
 verify_entry(entry)  ── consensus ──▶ verified  → points += score
      leader: web.get(url) + LLM verdict            ├─ stake refunded
@@ -64,11 +64,11 @@ forces agreement), and the verdict must be bound to the submitted `source_url`.
 | Method | Type | Description |
 |---|---|---|
 | `submit_entry` | write | New entry → `pending` (dup + quota guards) |
-| `stake_for` | write payable | Escrow any amount ≥ 10 wei on own pending entry |
+| `stake_for` | write payable | Escrow any amount ≥ 0.01 GEN on own pending entry |
 | `verify_entry` | write + consensus | AI novelty/faithfulness/score verdict |
 | `appeal_entry` | write | Author-only re-queue of `rejected` (fee 2 pts, history kept) |
 | `cancel_entry` | write | Author-only escape hatch (refunds stake, frees URL) |
-| `claim_gen` | write | Burn points → GEN from pool (10 wei/pt) |
+| `claim_gen` | write | Burn points → GEN from pool (0.001 GEN/pt) |
 | `fund_pool` / `withdraw_pool` | write payable / owner | Pool top-up / owner withdrawal (no locked fees) |
 | `get_entry` / `get_entries_by_topic` / `get_topics` / `get_entries_by_author` | view | Reads (incl. `stake`, `appeals`) |
 | `get_balance` / `get_pending_count` / `get_leaderboard` | view | Points, quota, ranking |
@@ -78,8 +78,8 @@ forces agreement), and the verdict must be bound to the submitted `source_url`.
 
 Network: **GenLayer studionet**.
 
-**Contract:** `0x4941960FFa8188008Def7536A3cBf95Abd156369`
-([view in explorer](https://explorer-studio.genlayer.com/address/0x4941960FFa8188008Def7536A3cBf95Abd156369))
+**Contract:** `0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1`
+([view in explorer](https://explorer-studio.genlayer.com/address/0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1))
 
 Deploys and writes use the project's private deployer wallet (kept out of this
 repo). `get_project` answers `GenPustaka`.

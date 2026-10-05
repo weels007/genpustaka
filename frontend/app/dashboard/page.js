@@ -6,11 +6,12 @@ import { useWallet } from "../../lib/wallet";
 import {
   ABIS,
   CONTRACT_ADDR,
-  REWARD_PER_POINT,
+  REWARD_PER_POINT_WEI,
   fetchBalance,
   fetchByAuthor,
   fetchEntry,
   fetchPool,
+  formatWeiToGen,
   shortAddr,
   waitFinalizedChecked,
 } from "../../lib/genlayer";
@@ -104,12 +105,13 @@ export default function DashboardPage() {
     const pts = parseInt(claimAmt, 10);
     if (!pts || pts <= 0) { setClaimMsg("Enter a positive point amount."); return; }
     setClaiming(true);
-    setClaimMsg(`Claiming ${pts} pts → ${pts * Number(REWARD_PER_POINT)} wei…`);
+    const preview = formatWeiToGen(BigInt(pts) * REWARD_PER_POINT_WEI);
+    setClaimMsg(`Claiming ${pts} pts → ${preview} GEN…`);
     try {
       const client = await getWriteClient();
       const tx = await client.writeContract({ address: CONTRACT_ADDR, abi: ABIS.claim, functionName: "claim_gen", args: [BigInt(pts)] });
       await waitFinalizedChecked(tx, 180000);
-      setClaimMsg(`Claimed ${pts} pts for ${pts * Number(REWARD_PER_POINT)} wei GEN.`);
+      setClaimMsg(`Claimed ${pts} pts for ${preview} GEN.`);
       setClaimAmt("");
       await load();
     } catch (e) {
@@ -138,8 +140,8 @@ export default function DashboardPage() {
                 <div className="stat"><div className="k">PENDING</div><div className="v">{stats?.pending ?? "…"}</div></div>
                 <div className="stat"><div className="k">POINTS EARNED</div><div className="v">{stats?.earned ?? "…"}</div></div>
                 <div className="stat"><div className="k">POINTS NOW</div><div className="v">{stats?.points ?? "…"}</div></div>
-                <div className="stat"><div className="k">STAKED (PENDING)</div><div className="v">{stats ? `${stats.staked} wei` : "…"}</div></div>
-                <div className="stat"><div className="k">REWARD POOL</div><div className="v">{stats ? `${stats.pool} wei` : "…"}</div></div>
+                <div className="stat"><div className="k">STAKED (PENDING)</div><div className="v">{stats ? `${formatWeiToGen(stats.staked)} GEN` : "…"}</div></div>
+                <div className="stat"><div className="k">REWARD POOL</div><div className="v">{stats ? `${formatWeiToGen(stats.pool)} GEN` : "…"}</div></div>
               </div>
               <div className="row">
                 <button type="button" className="btn ghost" disabled={loading} onClick={load}>
@@ -154,7 +156,7 @@ export default function DashboardPage() {
         {address && (
           <div className="panel">
             <h2>Claim GEN rewards</h2>
-            <p className="sub">Burn points for GEN from the reward pool. Rate: {REWARD_PER_POINT.toString()} wei per point.</p>
+            <p className="sub">Burn points for GEN from the reward pool. Rate: {formatWeiToGen(REWARD_PER_POINT_WEI)} GEN per point.</p>
             <div className="row">
               <input value={claimAmt} onChange={(e) => setClaimAmt(e.target.value)} placeholder="Points" inputMode="numeric" style={{ maxWidth: 160 }} />
               <button type="button" className="btn" disabled={claiming} onClick={onClaim}>

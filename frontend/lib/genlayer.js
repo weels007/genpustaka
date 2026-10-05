@@ -1,7 +1,7 @@
 import { createClient, chains, createAccount } from "genlayer-js";
 import { ExecutionResult } from "genlayer-js/types";
 
-export const CONTRACT_ADDR = "0x4941960FFa8188008Def7536A3cBf95Abd156369";
+export const CONTRACT_ADDR = "0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1";
 export const RPC_URL = "https://studio.genlayer.com/api";
 
 // Raw JSON-RPC connectivity probe (no SDK): distinguishes network/CORS
@@ -22,8 +22,27 @@ export async function diagnoseRpc() {
 
 // Test-scale tokenomics (matches contract constants). All amounts in wei.
 // Stake is a free-amount confidence bond: any value >= MIN_STAKE.
-export const MIN_STAKE = 10n;
-export const REWARD_PER_POINT = 10n;
+export const MIN_STAKE_WEI = 10n ** 16n; // 0.01 GEN
+export const REWARD_PER_POINT_WEI = 10n ** 15n; // 0.001 GEN
+const WEI_PER_GEN = 10n ** 18n;
+
+// "0.05" -> 50000000000000000n. Throws on malformed input. No floats.
+export function parseGenToWei(str) {
+  const s = String(str).trim();
+  if (!/^\d+(\.\d{1,18})?$/.test(s)) throw new Error('Enter a GEN amount like "0.05".');
+  const [whole, frac = ""] = s.split(".");
+  return BigInt(whole) * WEI_PER_GEN + BigInt((frac + "0".repeat(18)).slice(0, 18));
+}
+
+// 50000000000000000n -> "0.05". Accepts bigint/number/string.
+export function formatWeiToGen(v) {
+  const bi = BigInt(String(v));
+  const neg = bi < 0n ? "-" : "";
+  const abs = bi < 0n ? -bi : bi;
+  const whole = abs / WEI_PER_GEN;
+  const frac = (abs % WEI_PER_GEN).toString().padStart(18, "0").replace(/0+$/, "");
+  return neg + whole.toString() + (frac ? "." + frac : "");
+}
 export const STUDIO_URL = "https://studio.genlayer.com";
 export const explorerAddressUrl = (addr) => `https://explorer-studio.genlayer.com/address/${addr}`;
 
@@ -96,12 +115,22 @@ export async function waitFinalized(hash, timeout = 600000) {
 }
 
 // FINALIZED is a lifecycle state, not execution success: a rolled-back
-// call (e.g. duplicate URL) also finalizes. Always confirm execution.
+// call (e.g. duplicate URL, under-min stake) also finalizes. Always confirm
+// execution via BOTH the execution-result flag AND the leader receipt,
+// because simplified receipts may omit either field.
 export async function waitFinalizedChecked(hash, timeout = 600000) {
   const receipt = await getClient().waitForTransactionReceipt({ hash, status: "FINALIZED", timeout, interval: 5000, fullTransaction: true });
   const exec = receipt?.txExecutionResultName;
   if (exec && exec !== ExecutionResult.FINISHED_WITH_RETURN && exec !== "FINISHED_WITH_RETURN") {
     throw new Error(`Transaction finalized but execution failed (${exec}). Contract state unchanged.`);
+  }
+  const leaders = receipt?.consensus_data?.leader_receipt;
+  const first = Array.isArray(leaders) ? leaders[0] : null;
+  const res = first?.result;
+  const resStatus = typeof res === "object" ? res?.status : null;
+  if (resStatus && resStatus !== "return") {
+    const payload = typeof res?.payload === "object" ? JSON.stringify(res.payload) : String(res?.payload ?? "");
+    throw new Error(`Transaction finalized but execution reverted (${resStatus}). ${payload} Contract state unchanged.`);
   }
   return receipt;
 }

@@ -11,13 +11,12 @@ ERROR_TRANSIENT = "[TRANSIENT]"
 ERROR_LLM = "[LLM_ERROR]"
 
 PROJECT_NAME = "GenPustaka"
-PROJECT_VERSION = "6"
+PROJECT_VERSION = "7"
 
-# Test-scale tokenomics (studionet GEN is valueless; same code works with
-# GEN-scale constants on a real network). All amounts in wei.
+# Tokenomics in whole GEN units, stored as wei (1 GEN = 10**18 wei).
 # Stake is a free-amount confidence bond: any value >= MIN_STAKE.
-MIN_STAKE = 10
-REWARD_PER_POINT = 10
+MIN_STAKE = 10 ** 16  # 0.01 GEN
+REWARD_PER_POINT = 10 ** 15  # 0.001 GEN
 
 
 @gl.evm.contract_interface
@@ -405,7 +404,7 @@ Return ONLY JSON with keys: is_novel (bool), is_faithful (bool), score (int), an
             raise gl.vm.UserError(f"{ERROR_EXPECTED} Entry already staked")
         paid = int(gl.message.value)
         if paid < MIN_STAKE:
-            raise gl.vm.UserError(f"{ERROR_EXPECTED} Stake must be at least {MIN_STAKE} wei")
+            raise gl.vm.UserError(f"{ERROR_EXPECTED} Stake must be at least 0.01 GEN")
         staked = Entry(
             author=e.author,
             topic=str(e.topic),

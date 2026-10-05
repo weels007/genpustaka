@@ -1,7 +1,7 @@
 const { createClient, chains, createAccount } = require("genlayer-js");
 const fs = require("fs");
 
-const CONTRACT = "0x4941960FFa8188008Def7536A3cBf95Abd156369";
+const CONTRACT = "0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1";
 const STR = { type: "string", name: "" };
 const U256 = { type: "uint256", name: "" };
 const ABI_STAKE = [{ inputs: [{ ...STR, name: "entry_id" }], name: "stake_for", outputs: [STR], stateMutability: "nonpayable", type: "function" }];
@@ -22,14 +22,14 @@ async function main() {
   const client = createClient({ chain: chains.studionet, account });
   console.log("Account:", account.address, "Contract:", CONTRACT);
 
-  console.log("\n[1] stake_for(0) + 250 wei (flexible amount)");
-  let tx = await client.writeContract({ address: CONTRACT, abi: ABI_STAKE, functionName: "stake_for", args: ["0"], value: 250n });
+  console.log("\n[1] stake_for(0) + 0.02 GEN");
+  let tx = await client.writeContract({ address: CONTRACT, abi: ABI_STAKE, functionName: "stake_for", args: ["0"], value: 20000000000000000n });
   console.log("  TX:", tx);
   await checked(client, tx);
 
   let cfg = await client.readContract({ address: CONTRACT, abi: ABI_CONFIG, functionName: "get_config", args: [] });
   console.log("  contract balance:", cfg.balance.toString(), "wei | pool:", cfg.pool.toString(), "| min_stake:", cfg.min_stake.toString());
-  console.log("  " + (cfg.balance.toString() === "250" ? "PASSED (flexible stake escrowed)" : "FAILED"));
+  console.log("  " + (cfg.balance.toString() === "20000000000000000" ? "PASSED (0.02 GEN escrowed)" : "FAILED"));
 
   console.log("\n=== flexible stake OK (fund/withdraw already proven) ===");
 }

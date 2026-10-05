@@ -48,12 +48,12 @@ async function main() {
   const entry = await client.readContract({ address: CONTRACT, abi: ABI_GET_ENTRY, functionName: "get_entry", args: [count0.toString()] });
   console.log("  Status:", entry.status, "| Score:", entry.score.toString(), "| Appeals:", entry.appeals.toString(), "| Stake:", entry.stake.toString());
 
-  console.log("\n[3b] stake_for (+100 wei)");
-  const stakeTx = await client.writeContract({ account, address: CONTRACT, abi: ABI_STAKE, functionName: "stake_for", args: [count0.toString()], value: 100n });
+  console.log("\n[3b] stake_for (+0.02 GEN)");
+  const stakeTx = await client.writeContract({ account, address: CONTRACT, abi: ABI_STAKE, functionName: "stake_for", args: [count0.toString()], value: 20000000000000000n });
   console.log("  TX:", stakeTx);
   await client.waitForTransactionReceipt({ hash: stakeTx, status: "FINALIZED", timeout: 180000, interval: 5000 });
   const staked = await client.readContract({ address: CONTRACT, abi: ABI_GET_ENTRY, functionName: "get_entry", args: [count0.toString()] });
-  console.log("  Stake now:", staked.stake.toString(), "| " + (staked.stake.toString() === "100" ? "PASSED" : "FAILED"));
+  console.log("  Stake now:", staked.stake.toString(), "| " + (staked.stake.toString() === "20000000000000000" ? "PASSED" : "FAILED"));
 
   console.log("\n[4] get_entries_by_topic");
   const byTopic = await client.readContract({ address: CONTRACT, abi: ABI_BY_TOPIC, functionName: "get_entries_by_topic", args: ["Web"] });

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
-import { CONTRACT_ADDR, explorerAddressUrl, fetchConfig, fetchCount, fetchProject } from "../../lib/genlayer";
+import { CONTRACT_ADDR, explorerAddressUrl, fetchConfig, fetchCount, fetchProject, formatWeiToGen } from "../../lib/genlayer";
 
 export default function ContractPage() {
   const [info, setInfo] = useState(null);
@@ -46,10 +46,10 @@ export default function ContractPage() {
           <div className="stat-grid">
             <div className="stat"><div className="k">PROJECT</div><div className="v">{info ? info.name : "…"}</div></div>
             <div className="stat"><div className="k">ENTRIES</div><div className="v">{info?.count || "…"}</div></div>
-            <div className="stat"><div className="k">REWARD POOL</div><div className="v">{info ? `${info.pool} wei` : "…"}</div></div>
-            <div className="stat"><div className="k">CONTRACT BALANCE</div><div className="v">{info ? `${info.balance} wei` : "…"}</div></div>
-            <div className="stat"><div className="k">MIN STAKE</div><div className="v">{info ? `${info.stake} wei` : "…"}</div></div>
-            <div className="stat"><div className="k">GEN / POINT</div><div className="v">{info ? `${info.rate} wei` : "…"}</div></div>
+            <div className="stat"><div className="k">REWARD POOL</div><div className="v">{info ? `${formatWeiToGen(info.pool)} GEN` : "…"}</div></div>
+            <div className="stat"><div className="k">CONTRACT BALANCE</div><div className="v">{info ? `${formatWeiToGen(info.balance)} GEN` : "…"}</div></div>
+            <div className="stat"><div className="k">MIN STAKE</div><div className="v">{info ? `${formatWeiToGen(info.stake)} GEN` : "…"}</div></div>
+            <div className="stat"><div className="k">GEN / POINT</div><div className="v">{info ? `${formatWeiToGen(info.rate)} GEN` : "…"}</div></div>
             <div className="stat"><div className="k">APPEAL FEE</div><div className="v">{info ? `${info.fee} pts` : "…"}</div></div>
             <div className="stat"><div className="k">MAX PENDING</div><div className="v">{info?.cap || "…"}</div></div>
           </div>

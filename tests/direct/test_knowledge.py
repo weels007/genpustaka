@@ -343,19 +343,21 @@ def test_source_unavailable_404(direct_vm, direct_deploy, direct_alice):
     direct_vm.clear_mocks()
 
 
-STAKE = 100
+STAKE = 2 * 10**16  # 0.02 GEN (>= MIN_STAKE of 0.01 GEN)
+MIN_STAKE_WEI = 10**16
+RATE_WEI = 10**15  # 0.001 GEN per point
 
 
 def test_stake_happy_path(direct_vm, direct_deploy, direct_alice):
     contract = _deploy_fresh(direct_vm, direct_deploy, direct_alice)
     eid = contract.submit_entry("AI", "https://example.com/stake-1", "Ringkasan stake yang cukup panjang untuk lolos validasi.")
 
-    # Free-amount stake: any value >= MIN_STAKE (10 wei) is accepted.
-    direct_vm.value = 250
+    # Free-amount stake: any value >= MIN_STAKE (0.01 GEN) is accepted.
+    direct_vm.value = STAKE
     assert contract.stake_for(eid) == eid
     direct_vm.value = 0
 
-    assert int(contract.get_entry(eid)["stake"]) == 250
+    assert int(contract.get_entry(eid)["stake"]) == STAKE
 
 
 def test_stake_validation(direct_vm, direct_deploy, direct_alice, direct_bob):
@@ -430,8 +432,8 @@ def test_fund_claim_withdraw(direct_vm, direct_deploy, direct_alice, direct_bob)
     with direct_vm.expect_revert("Send some value"):
         contract.fund_pool()
 
-    direct_vm.value = 500
-    assert int(contract.fund_pool()) == 500
+    direct_vm.value = 10**17  # 0.1 GEN
+    assert int(contract.fund_pool()) == 10**17
     direct_vm.value = 0
 
     # Earn 8 points first.
@@ -444,10 +446,10 @@ def test_fund_claim_withdraw(direct_vm, direct_deploy, direct_alice, direct_bob)
     with direct_vm.expect_revert("Insufficient points"):
         contract.claim_gen(100)
 
-    # 2 points * 10 wei/point = 20 wei from the pool.
-    assert int(contract.claim_gen(2)) == 480
+    # 2 points * 0.001 GEN/point = 0.002 GEN from the pool.
+    assert int(contract.claim_gen(2)) == 10**17 - 2 * RATE_WEI
     assert int(contract.get_balance(direct_alice)) == 6
-    assert int(contract.get_pool()) == 480
+    assert int(contract.get_pool()) == 10**17 - 2 * RATE_WEI
 
     with direct_vm.expect_revert("positive"):
         contract.claim_gen(0)
@@ -459,9 +461,9 @@ def test_fund_claim_withdraw(direct_vm, direct_deploy, direct_alice, direct_bob)
     direct_vm.sender = direct_alice
 
     with direct_vm.expect_revert("insufficient"):
-        contract.withdraw_pool(999999)
-    assert int(contract.withdraw_pool(100)) == 380
-    assert int(contract.get_pool()) == 380
+        contract.withdraw_pool(10**30)
+    assert int(contract.withdraw_pool(100)) == 10**17 - 2 * RATE_WEI - 100
+    assert int(contract.get_pool()) == 10**17 - 2 * RATE_WEI - 100
 
 
 def test_cancel_refunds_stake(direct_vm, direct_deploy, direct_alice):
