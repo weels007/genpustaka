@@ -1,0 +1,1 @@
+{"name": "genpustaka-scripts", "version": "1.0.0", "description": "GenPustaka deploy + e2e scripts (studionet, wallet cpe-deploy)", "type": "commonjs", "dependencies": {"genlayer-js": "^1.1.8"}}

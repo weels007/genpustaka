@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenPustaka | Crowd-sourced Knowledge on GenLayer</title>
+<meta name="description" content="GenPustaka — users are rewarded for finding and summarizing new information. AI validators verify every entry on GenLayer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Inter:wght@400;500&family=Manrope:wght@400;700&family=Galada&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+:root {
+    --bg-color: #0a0a0a;
+    --text-color: #ffffff;
+    --accent-color: #ffffff;
+    --muted-color: rgba(255, 255, 255, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --font-main: 'Inter', sans-serif;
+    --font-heading: 'Galada', cursive;
+    --pink: #7ef0d4;
+    --pink-ink: #01241c;
+
+    /* Dynamic Background Variables (topic: Web = teal) */
+    --bg-inner: #0b8a78;
+    --bg-mid: #044e3b;
+    --bg-outer: #011411;
+    --orb-a: #7ef0d4;
+    --orb-b: #0ea5a5;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: radial-gradient(circle at center, var(--bg-inner) 0%, var(--bg-mid) 50%, var(--bg-outer) 100%);
+    background-attachment: fixed;
+    color: var(--text-color);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body.violet-theme { --bg-inner: #5b2b8a; --bg-mid: #2c154e; --bg-outer: #0d0614; --orb-a: #c4b5fd; --orb-b: #7c3aed; }
+body.amber-theme { --bg-inner: #8a5a0b; --bg-mid: #4e3204; --bg-outer: #140d01; --orb-a: #fcd34d; --orb-b: #b45309; }
+
+/* ---------- particles ---------- */
+#particles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+.particle { position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.05));
+}
+@keyframes floatUpImg {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 0.4; } 90% { opacity: 0.4; }
+    100% { transform: translateY(-110vh) translateX(30px); opacity: 0; }
+}
+
+/* ---------- header ---------- */
+.header { display: flex; justify-content: space-between; align-items: center; padding: 1.4rem 4%; position: fixed; top: 0; width: 100%; z-index: 100; }
+.logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.2rem; font-family: var(--font-heading); }
+.nav { display: flex; gap: 0.5rem; background: var(--glass-bg); padding: 0.4rem; border-radius: 100px; border: 1px solid var(--glass-border); }
+.nav.glass { position: relative; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.nav-item { font-family: 'Manrope', sans-serif; color: var(--muted-color); text-decoration: none; font-size: 0.85rem; font-weight: 500; padding: 0.5rem 1.2rem; border-radius: 100px; transition: all 0.3s ease; }
+.nav-item:hover, .nav-item.active { background: var(--pink); color: var(--pink-ink); }
+.contact-btn { background: rgba(0,0,0,0.5); color: white; border: none; padding: 0.9rem 2rem; border-radius: 100px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; }
+.contact-btn:hover { background: rgba(0,0,0,0.7); transform: translateY(-2px); }
+
+/* ---------- hero ---------- */
+.hero { height: 100vh; min-height: 640px; display: flex; align-items: center; justify-content: center; padding: 0 4%; padding-top: 5rem; position: relative; z-index: 1; }
+.hero-content { display: flex; justify-content: space-between; align-items: stretch; width: 100%; max-width: 100%; height: 100%; position: relative; }
+.main-title, .side-title { font-family: var(--font-heading); font-size: clamp(4rem, 9vw, 10rem); line-height: 0.85; font-weight: 400; white-space: nowrap; color: white; }
+.outline { color: var(--text-color); }
+
+.dust-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; transition: transform 0.1s ease-out; }
+.mote { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.8), transparent 70%); pointer-events: none; }
+.m1 { top: 12%; left: 12%; width: 60px; height: 60px; }
+.m2 { top: 42%; left: 82%; width: 130px; height: 130px; opacity: 0.35; }
+.m3 { top: 72%; left: 76%; width: 80px; height: 80px; }
+.m4 { top: 86%; left: 18%; width: 110px; height: 110px; opacity: 0.3; }
+
+.hero-left { display: flex; flex-direction: column; height: 100%; padding: 6rem 0; gap: 2rem; z-index: 100; }
+.description { color: var(--muted-color); font-size: 1.1rem; line-height: 1.6; max-width: 400px; }
+.cta-group { display: flex; gap: 1rem; }
+.primary-btn { display: flex; align-items: center; gap: 1.5rem; background: rgba(0,0,0,0.5); color: white; border: none; padding: 0.4rem 0.4rem 0.4rem 1.5rem; border-radius: 100px; font-weight: 700; cursor: pointer; width: fit-content; transition: all 0.3s ease; font-size: 1rem; }
+.primary-btn:hover { background: rgba(0,0,0,0.7); transform: translateY(-3px); }
+.plus-icon { background: var(--pink); color: var(--pink-ink); width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.4rem; font-weight: 900; line-height: 1; padding-bottom: 2px; }
+.award-badge { display: flex; align-items: center; gap: 1rem; margin-top: auto; }
+.award-icon { width: 48px; height: 48px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.award-text { display: flex; flex-direction: column; }
+.award-title { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted-color); }
+.award-subtitle { font-size: 0.85rem; font-weight: 600; }
+
+/* center core (replaces 3D can: pure CSS/SVG Pustaka Core) */
+.hero-center { display: flex; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0;
+    animation: fadeIn 1.5s ease-out 0.3s forwards, floatY 6s ease-in-out infinite; pointer-events: none;
+    background: radial-gradient(circle at center, rgba(126,240,212,0.10) 0%, transparent 70%); }
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+.core-wrap { width: min(46vh, 380px); height: min(46vh, 380px); position: relative; transform-style: preserve-3d; will-change: transform; }
+.core-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); }
+.core-ring.r2 { inset: 12%; border-color: rgba(255,255,255,0.18); animation: spinSlow 24s linear infinite; border-top-color: var(--orb-a); }
+.core-ring.r3 { inset: 24%; border-color: rgba(255,255,255,0.12); animation: spinSlow 16s linear infinite reverse; border-bottom-color: var(--orb-a); }
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+.core-glow { position: absolute; inset: 18%; border-radius: 50%;
+    background: radial-gradient(circle, var(--orb-a) 0%, transparent 65%); opacity: 0.35; filter: blur(10px); }
+.core-book { position: absolute; inset: 30%; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.25); border-radius: 24px;
+    backdrop-filter: blur(8px); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+
+/* orbs (replaces berries: CSS knowledge orbs) */
+.orbs-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 110; transition: transform 0.1s ease-out; }
+.orbs-container-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; transition: transform 0.1s ease-out; }
+.orb { position: absolute; border-radius: 50%; outline: none;
+    background: radial-gradient(circle at 32% 30%, #ffffff 0%, var(--orb-a) 28%, var(--orb-b) 62%, rgba(0,0,0,0.55) 100%);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset -6px -8px 18px rgba(0,0,0,0.35);
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.b1 { top: 25%; left: 30%; width: 120px; height: 120px; }
+.b2 { top: 60%; left: 42%; width: 64px; height: 64px; }
+.b3 { top: 30%; left: 62%; width: 140px; height: 140px; }
+.b4 { top: 15%; left: 48%; width: 88px; height: 88px; }
+.b5 { top: 75%; left: 20%; width: 76px; height: 76px; }
+.b6 { top: 45%; left: 75%; width: 110px; height: 110px; }
+.b7 { top: 15%; left: 40%; width: 52px; height: 52px; opacity: 0.7; }
+.b8 { top: 50%; left: 55%; width: 46px; height: 46px; opacity: 0.6; }
+.b9 { top: 80%; left: 35%; width: 50px; height: 50px; opacity: 0.7; }
+
+/* right column: topic carousel */
+.hero-right { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; text-align: right; height: 100%; padding: 6rem 0; z-index: 100; width: 450px; pointer-events: none; }
+.product-carousel { display: flex; flex-direction: column; gap: 1.5rem; align-items: flex-end; pointer-events: auto; }
+.carousel-cards { display: flex; gap: 1rem; }
+.card { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 28px; display: flex; flex-direction: column; align-items: center; gap: 1rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 135px; backdrop-filter: blur(10px); text-align: center; }
+.card:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.4); }
+.card.active { border-color: var(--pink); }
+.card-glyph { width: 72px; height: 72px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-family: 'Outfit'; font-weight: 900; font-size: 1.6rem; color: #01241c; background: linear-gradient(135deg, var(--orb-a), var(--orb-b)); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform; }
+.card:hover .card-glyph { transform: translateY(-10px) rotate(-8deg) scale(1.1); }
+.card-info { display: flex; flex-direction: column; font-size: 0.7rem; width: 100%; }
+.card-info span:first-child { font-weight: 600; }
+.card-info span:last-child { color: var(--muted-color); }
+.carousel-nav { display: flex; gap: 1rem; }
+.nav-arrow { background: var(--glass-bg); border: 1px solid var(--glass-border); color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s; font-size: 1rem; }
+.nav-arrow:hover { background: rgba(255,255,255,0.1); }
+.side-title { align-self: flex-end; text-align: right; }
+
+/* ---------- dApp sections ---------- */
+.section { position: relative; z-index: 2; padding: 4rem 4%; max-width: 1100px; margin: 0 auto; }
+.panel { background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; backdrop-filter: blur(14px); margin-bottom: 2rem; }
+.panel h2 { font-family: 'Outfit'; font-weight: 900; font-size: 1.6rem; margin-bottom: 0.4rem; }
+.panel p.sub { color: var(--muted-color); margin-bottom: 1.4rem; font-size: 0.95rem; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.stat { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1rem; }
+.stat .k { font-size: 0.7rem; letter-spacing: 0.08em; color: var(--muted-color); }
+.stat .v { font-size: 1.4rem; font-weight: 700; font-family: 'Outfit'; }
+.row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; }
+input, textarea, select { background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border); color: white; border-radius: 12px; padding: 0.7rem 1rem; font-family: var(--font-main); font-size: 0.9rem; width: 100%; }
+input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.4); }
+textarea { min-height: 90px; resize: vertical; }
+label { font-size: 0.75rem; color: var(--muted-color); display: block; margin: 0.8rem 0 0.3rem; }
+.btn { background: var(--pink); color: var(--pink-ink); border: none; padding: 0.8rem 1.6rem; border-radius: 100px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+.btn:hover { transform: translateY(-2px); }
+.btn.ghost { background: transparent; border: 1px solid var(--glass-border); color: white; }
+.btn:disabled { opacity: 0.5; cursor: wait; transform: none; }
+.mono { font-family: monospace; font-size: 0.8rem; word-break: break-all; }
+.status { margin-top: 1rem; font-size: 0.9rem; color: var(--muted-color); }
+.status.ok { color: var(--pink); }
+.status.err { color: #fca5a5; }
+table.board { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+table.board td, table.board th { padding: 0.5rem 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
+.entry-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 14px; padding: 1rem; margin-top: 0.8rem; font-size: 0.85rem; }
+.entry-card .tag { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.7rem; border-radius: 100px; background: var(--pink); color: var(--pink-ink); font-weight: 700; margin-right: 0.4rem; }
+.entry-card .tag.rejected { background: rgba(255,255,255,0.15); color: white; }
+.warn { background: rgba(252,211,77,0.1); border: 1px solid rgba(252,211,77,0.35); color: #fde68a; border-radius: 12px; padding: 0.7rem 1rem; font-size: 0.8rem; margin-top: 0.8rem; }
+footer { text-align: center; padding: 2.5rem; color: var(--muted-color); font-size: 0.8rem; position: relative; z-index: 2; }
+
+@keyframes shine { from { transform: translateX(-100%) rotate(45deg); } to { transform: translateX(200%) rotate(45deg); } }
+
+@media (max-width: 1200px) {
+    .hero { height: auto; min-height: 100vh; }
+    .hero-content { flex-direction: column; align-items: center; gap: 1rem; }
+    .hero-left { align-items: center; text-align: center; padding: 5rem 0 1rem; height: auto; }
+    .description { max-width: 520px; }
+    .hero-center { position: relative; height: 46vh; }
+    .hero-right { align-items: center; text-align: center; width: 100%; height: auto; padding: 1rem 0 4rem; }
+    .side-title { align-self: center; text-align: center; }
+    .main-title, .side-title { font-size: clamp(3.5rem, 14vw, 6rem); }
+}
+</style>
+</head>
+<body>
+<div id="particles-container"></div>
+
+<header class="header">
+    <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M9 8h7M9 11.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>GenPustaka</span>
+    </div>
+    <nav class="nav glass">
+        <a href="#" class="nav-item active">Home</a>
+        <a href="#app" class="nav-item">Explore</a>
+        <a href="#submit" class="nav-item">Submit</a>
+        <a href="#board" class="nav-item">Leaderboard</a>
+        <a href="#contract" class="nav-item">Contract</a>
+    </nav>
+    <button class="contact-btn" id="studio-btn">Open Studio</button>
+</header>
+
+<main class="hero">
+    <div class="hero-content">
+        <div class="dust-container">
+            <div class="mote m1"></div><div class="mote m2"></div>
+            <div class="mote m3"></div><div class="mote m4"></div>
+        </div>
+
+        <div class="hero-left">
+            <h1 class="main-title"><span class="outline">Pure</span><br>Knowledge</h1>
+            <p class="description">
+                Find new information, summarize it, earn rewards. <br>
+                Every entry is verified by decentralized AI validators — <br>
+                all in one open knowledge base.
+            </p>
+            <div class="cta-group">
+                <button class="primary-btn" id="cta-submit">Submit Knowledge <span class="plus-icon">+</span></button>
+            </div>
+            <div class="award-badge">
+                <div class="award-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1L12 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="award-text">
+                    <span class="award-title">BUILT ON GENLAYER</span>
+                    <span class="award-subtitle">AI CONSENSUS VERIFIED</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="orbs-container-bg">
+            <div class="orb b7"></div><div class="orb b8"></div><div class="orb b9"></div>
+        </div>
+
+        <div class="hero-center" id="hero-center">
+            <div class="core-wrap" id="core">
+                <div class="core-ring r1"></div>
+                <div class="core-ring r2"></div>
+                <div class="core-ring r3"></div>
+                <div class="core-glow"></div>
+                <div class="core-book">
+                    <svg width="72" height="72" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+                        <path d="M9 8h7M9 11.5h5" stroke="#7ef0d4" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="orbs-container">
+            <div class="orb b1"></div><div class="orb b2"></div><div class="orb b3"></div>
+            <div class="orb b4"></div><div class="orb b5"></div><div class="orb b6"></div>
+        </div>
+
+        <div class="hero-right">
+            <div class="product-carousel">
+                <div class="carousel-cards">
+                    <div class="card active" data-topic="Web" data-theme="" data-word="Wisdom">
+                        <div class="card-glyph">W</div>
+                        <div class="card-info"><span>Web</span><span id="count-web">– entries</span></div>
+                    </div>
+                    <div class="card" data-topic="AI" data-theme="violet-theme" data-word="Insight">
+                        <div class="card-glyph">AI</div>
+                        <div class="card-info"><span>AI</span><span id="count-ai">– entries</span></div>
+                    </div>
+                    <div class="card" data-topic="Crypto" data-theme="amber-theme" data-word="Signal">
+                        <div class="card-glyph">₿</div>
+                        <div class="card-info"><span>Crypto</span><span id="count-crypto">– entries</span></div>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="nav-arrow" id="prev-topic">←</button>
+                    <button class="nav-arrow" id="next-topic">→</button>
+                </div>
+            </div>
+            <h2 class="side-title"><span class="outline">Verified</span><br><span id="side-word">Wisdom</span></h2>
+        </div>
+    </div>
+</main>
+
+<section class="section" id="app">
+    <div class="panel">
+        <h2>Live from chain</h2>
+        <p class="sub">Read directly from the GenPustaka contract on studionet. No wallet needed for reads.</p>
+        <div class="stat-grid">
+            <div class="stat"><div class="k">PROJECT</div><div class="v" id="st-project">…</div></div>
+            <div class="stat"><div class="k">ENTRIES</div><div class="v" id="st-count">…</div></div>
+            <div class="stat"><div class="k">CONTRIBUTORS</div><div class="v" id="st-users">…</div></div>
+            <div class="stat"><div class="k">POINTS GIVEN</div><div class="v" id="st-points">…</div></div>
+        </div>
+        <div class="row">
+            <button class="btn ghost" id="btn-refresh">Refresh</button>
+            <span class="status" id="chain-status">Connecting…</span>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Explore by topic</h2>
+        <p class="sub">Query verified knowledge per topic.</p>
+        <div class="row">
+            <input id="exp-topic" value="Web" style="max-width:220px">
+            <button class="btn" id="btn-explore">Explore</button>
+        </div>
+        <div id="exp-list"></div>
+    </div>
+
+    <div class="panel" id="submit">
+        <h2>Submit knowledge</h2>
+        <p class="sub">Submit a new finding. Anyone can trigger AI verification afterwards. Duplicates are rejected on-chain.</p>
+        <label>Topic</label><input id="f-topic" value="Web">
+        <label>Source URL</label><input id="f-url" placeholder="https://…">
+        <label>Summary (min 20 chars, faithful to the source)</label><textarea id="f-summary" placeholder="Summarize what is new in the source…"></textarea>
+        <label>Burner private key (0x…) — writes only, never your main wallet</label><input id="f-key" type="password" placeholder="0x…">
+        <div class="warn">Studionet is gasless, but never paste a main-wallet key into any website — create a throwaway account for demos.</div>
+        <div class="row">
+            <button class="btn" id="btn-submit">Submit entry</button>
+            <button class="btn ghost" id="btn-verify" disabled>Verify last entry</button>
+        </div>
+        <div class="status" id="tx-status"></div>
+    </div>
+
+    <div class="panel" id="board">
+        <h2>Leaderboard</h2>
+        <p class="sub">Reward points earned from verified entries.</p>
+        <table class="board"><thead><tr><th>#</th><th>Address</th><th>Points</th></tr></thead><tbody id="board-body"><tr><td colspan="3">Loading…</td></tr></tbody></table>
+    </div>
+
+    <div class="panel" id="contract">
+        <h2>Contract</h2>
+        <p class="sub">GenPustaka intelligent contract (GenLayer studionet).</p>
+        <div class="mono" id="contract-addr">0x4941960FFa8188008Def7536A3cBf95Abd156369</div>
+        <div class="row">
+            <button class="btn ghost" id="btn-copy">Copy address</button>
+            <button class="btn ghost" id="btn-studio">Open in Studio</button>
+        </div>
+    </div>
+</section>
+
+<footer>GenPustaka — crowd-sourced knowledge, verified by AI consensus on GenLayer.</footer>
+
+<svg style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;">
+    <filter id="frosted">
+        <feTurbulence type="fractalNoise" baseFrequency="0.0125" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="80" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+</svg>
+
+<script>
+/* ================= motion engine (adapted: core + orbs, no 3D models) ================= */
+const core = document.getElementById('core');
+const orbsFG = document.querySelector('.orbs-container');
+const orbsBG = document.querySelector('.orbs-container-bg');
+const dustBG = document.querySelector('.dust-container');
+const allOrbs = document.querySelectorAll('.orb');
+const cards = document.querySelectorAll('.card');
+const sideWord = document.getElementById('side-word');
+let isSwitching = false;
+let switchSpin = 0;
+
+function setActiveCard(card) {
+    cards.forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    switchTopic(card);
+}
+cards.forEach(card => card.addEventListener('click', () => { if (!isSwitching) setActiveCard(card); }));
+function stepTopic(dir) {
+    const arr = [...cards];
+    const i = arr.findIndex(c => c.classList.contains('active'));
+    setActiveCard(arr[(i + dir + arr.length) % arr.length]);
+}
+document.getElementById('prev-topic').addEventListener('click', () => stepTopic(-1));
+document.getElementById('next-topic').addEventListener('click', () => stepTopic(1));
+
+async function switchTopic(card) {
+    if (isSwitching) return;
+    isSwitching = true;
+    const body = document.body;
+    const orbs = document.querySelectorAll('.orb');
+    const heroCenter = document.getElementById('hero-center');
+    const themes = { '': { inner: '#0b8a78', mid: '#044e3b', outer: '#011411' },
+        'violet-theme': { inner: '#5b2b8a', mid: '#2c154e', outer: '#0d0614' },
+        'amber-theme': { inner: '#8a5a0b', mid: '#4e3204', outer: '#140d01' } };
+    const t = themes[card.dataset.theme] || themes[''];
+
+    gsap.to(body, { '--bg-inner': t.inner, '--bg-mid': t.mid, '--bg-outer': t.outer, duration: 1.5, ease: 'power2.inOut' });
+
+    // core spin 720 with blur, swap theme class at peak
+    const spinObj = { val: 0, blur: 0 };
+    gsap.to(spinObj, { val: 360, blur: 12, duration: 0.6, ease: 'power2.in',
+        onUpdate: () => { switchSpin = spinObj.val; core.style.filter = `blur(${spinObj.blur}px)`; },
+        onComplete: () => {
+            body.classList.remove('violet-theme', 'amber-theme');
+            if (card.dataset.theme) body.classList.add(card.dataset.theme);
+            sideWord.textContent = card.dataset.word;
+            gsap.to(spinObj, { val: 720, blur: 0, duration: 1.5, ease: 'back.out(0.7)',
+                onUpdate: () => { switchSpin = spinObj.val; core.style.filter = `blur(${spinObj.blur}px)`; },
+                onComplete: () => { switchSpin = 0; core.style.filter = 'none'; } });
+        } });
+
+    // orbs implode -> swap accent happens via body class -> explode out
+    let done = 0;
+    orbs.forEach((orb) => {
+        const r = orb.getBoundingClientRect();
+        const cx = window.innerWidth / 2 - (r.left + r.width / 2);
+        const cy = window.innerHeight / 2 - (r.top + r.height / 2);
+        const startAngle = parseFloat(orb.dataset.angle) || 0;
+        const bx = parseFloat(orb.dataset.baseX) || 0, by = parseFloat(orb.dataset.baseY) || 0;
+        const nx = (Math.random() - 0.5) * 200, ny = (Math.random() - 0.5) * 200;
+        gsap.set(orb, { rotation: startAngle, x: bx, y: by });
+        const tl = gsap.timeline();
+        tl.to(orb, { x: cx, y: cy, rotation: startAngle + 45, scale: 0.1, opacity: 0, duration: 0.5, ease: 'power2.in' })
+          .to(orb, { duration: 0.3, onStart: () => { heroCenter.style.zIndex = 1; } })
+          .to(orb, { x: nx, y: ny, rotation: startAngle + 90, scale: 1, opacity: 1, duration: 0.9, ease: 'back.out(1.5)',
+            onComplete: () => { orb.dataset.angle = startAngle + 90; orb.dataset.baseX = nx; orb.dataset.baseY = ny;
+                orb.dataset.rx = 0; orb.dataset.ry = 0; if (++done === orbs.length) isSwitching = false; } });
+    });
+}
+
+allOrbs.forEach(b => { b.dataset.rx = 0; b.dataset.ry = 0; b.dataset.angle = Math.random() * 360; b.dataset.baseX = 0; b.dataset.baseY = 0; });
+let mouse = { x: 0, y: 0, px: 0, py: 0 };
+let currentMouse = { x: 0, y: 0 };
+window.addEventListener('mousemove', (e) => {
+    mouse.x = (e.clientX / window.innerWidth) - 0.5;
+    mouse.y = (e.clientY / window.innerHeight) - 0.5;
+    mouse.px = e.clientX; mouse.py = e.clientY;
+});
+function animate() {
+    const time = Date.now() * 0.001;
+    currentMouse.x += (mouse.x - currentMouse.x) * 0.05;
+    currentMouse.y += (mouse.y - currentMouse.y) * 0.05;
+    // tilt core toward cursor + switch spin
+    core.style.transform = `rotateY(${currentMouse.x * 40 + switchSpin}deg) rotateX(${-(currentMouse.y * 20)}deg)`;
+    orbsFG.style.transform = `translate(${currentMouse.x * 60}px, ${currentMouse.y * 60}px)`;
+    orbsBG.style.transform = `translate(${currentMouse.x * -30}px, ${currentMouse.y * -30}px)`;
+    dustBG.style.transform = `translate(${currentMouse.x * -15}px, ${currentMouse.y * -15}px)`;
+    if (!isSwitching) {
+        allOrbs.forEach((orb, i) => {
+            const r = orb.getBoundingClientRect();
+            const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+            const dx = mouse.px - ox, dy = mouse.py - oy;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            let trx = 0, try_ = 0, mult = 1;
+            if (dist < 400) { const f = (400 - dist) / 400; trx = (dx / dist) * f * -80; try_ = (dy / dist) * f * -80; mult = 1 + f * 5; }
+            let rx = parseFloat(orb.dataset.rx) || 0, ry = parseFloat(orb.dataset.ry) || 0;
+            let angle = parseFloat(orb.dataset.angle) || 0;
+            let bx = parseFloat(orb.dataset.baseX) || 0, by = parseFloat(orb.dataset.baseY) || 0;
+            rx += (trx - rx) * 0.1; ry += (try_ - ry) * 0.1; angle += 0.2 * mult;
+            orb.dataset.rx = rx; orb.dataset.ry = ry; orb.dataset.angle = angle;
+            const dur = [5, 7, 6, 8, 5.5, 6.5, 9, 11, 10][i % 9];
+            const ph = (time + i * 0.7) * (Math.PI * 2 / dur);
+            orb.style.transform = `translate(${rx + bx}px, ${ry + by + Math.sin(ph) * 15}px) rotate(${angle + Math.cos(ph) * 6}deg)`;
+        });
+    }
+    document.querySelectorAll('.mote').forEach((m, i) => {
+        const dur = 10 + i * 2, ph = (time + i * 1.2) * (Math.PI * 2 / dur);
+        m.style.transform = `translate(${Math.cos(ph * 0.5) * 15}px, ${Math.sin(ph) * 20}px)`;
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+
+// particles rising
+const pWrap = document.getElementById('particles-container');
+function spawnParticle() {
+    if (!pWrap) return;
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const s = Math.random() * 7 + 3;
+    p.style.width = p.style.height = s + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-20px';
+    p.style.opacity = Math.random() * 0.4 + 0.2;
+    p.style.animation = `floatUpImg ${Math.random() * 6 + 4}s linear forwards`;
+    pWrap.appendChild(p);
+    setTimeout(() => p.remove(), 11000);
+}
+setInterval(spawnParticle, 400);
+
+document.getElementById('cta-submit').addEventListener('click', () => document.getElementById('submit').scrollIntoView({ behavior: 'smooth' }));
+document.getElementById('studio-btn').addEventListener('click', () => window.open('https://studio.genlayer.com', '_blank'));
+document.getElementById('btn-studio').addEventListener('click', () => window.open('https://studio.genlayer.com', '_blank'));
+document.getElementById('btn-copy').addEventListener('click', async () => {
+    await navigator.clipboard.writeText(CONTRACT_ADDR);
+    document.getElementById('btn-copy').textContent = 'Copied!';
+});
+
+/* ================= dApp (genlayer-js, studionet) ================= */
+const CONTRACT_ADDR = '0x4941960FFa8188008Def7536A3cBf95Abd156369';
+const ABI_SUBMIT = [{ inputs: [{ type: 'string', name: 'topic' }, { type: 'string', name: 'url' }, { type: 'string', name: 'summary' }], name: 'submit_entry', outputs: [{ type: 'string', name: '' }], stateMutability: 'nonpayable', type: 'function' }];
+const ABI_VERIFY = [{ inputs: [{ type: 'string', name: 'entry_id' }], name: 'verify_entry', outputs: [{ type: 'string', name: 'entry_id' }, { type: 'string', name: 'status' }, { type: 'uint256', name: 'score' }, { type: 'string', name: 'analysis' }], stateMutability: 'nonpayable', type: 'function' }];
+const ABI_GET = [{ inputs: [{ type: 'string', name: 'entry_id' }], name: 'get_entry', outputs: [{ type: 'string', name: 'id' }, { type: 'address', name: 'author' }, { type: 'string', name: 'topic' }, { type: 'string', name: 'url' }, { type: 'string', name: 'summary' }, { type: 'string', name: 'status' }, { type: 'uint256', name: 'score' }, { type: 'string', name: 'analysis' }], stateMutability: 'view', type: 'function' }];
+const ABI_TOPIC = [{ inputs: [{ type: 'string', name: 'topic' }], name: 'get_entries_by_topic', outputs: [{ type: 'string', name: 'topic' }, { type: 'string[]', name: 'ids' }, { type: 'uint256', name: 'count' }], stateMutability: 'view', type: 'function' }];
+const ABI_COUNT = [{ inputs: [], name: 'get_count', outputs: [{ type: 'uint256', name: '' }], stateMutability: 'view', type: 'function' }];
+const ABI_PROJ = [{ inputs: [], name: 'get_project', outputs: [{ type: 'string', name: 'name' }, { type: 'string', name: 'version' }], stateMutability: 'view', type: 'function' }];
+const ABI_BAL = [{ inputs: [{ type: 'address', name: 'addr' }], name: 'get_balance', outputs: [{ type: 'uint256', name: '' }], stateMutability: 'view', type: 'function' }];
+const ABI_BOARD = [{ inputs: [], name: 'get_leaderboard', outputs: [{ type: 'string', name: '' }], stateMutability: 'view', type: 'function' }];
+
+let glClient = null, glChains = null, glAccountLib = null;
+async function gl() {
+    if (!glClient) {
+        const mod = await import('https://esm.sh/genlayer-js@1.1.8');
+        glChains = mod.chains; glAccountLib = mod.createAccount;
+        glClient = mod.createClient({ chain: mod.chains.studionet });
+    }
+    return glClient;
+}
+function setStatus(msg, cls) {
+    const el = document.getElementById('chain-status');
+    el.textContent = msg; el.className = 'status' + (cls ? ' ' + cls : '');
+}
+function shortAddr(a) { return a.slice(0, 6) + '…' + a.slice(-4); }
+
+async function loadStats() {
+    setStatus('Loading…');
+    try {
+        const c = await gl();
+        const [proj, count, board] = await Promise.all([
+            c.readContract({ address: CONTRACT_ADDR, abi: ABI_PROJ, functionName: 'get_project', args: [] }),
+            c.readContract({ address: CONTRACT_ADDR, abi: ABI_COUNT, functionName: 'get_count', args: [] }),
+            c.readContract({ address: CONTRACT_ADDR, abi: ABI_BOARD, functionName: 'get_leaderboard', args: [] }),
+        ]);
+        const addrs = Object.keys(board);
+        const total = addrs.reduce((s, a) => s + Number(board[a]), 0);
+        document.getElementById('st-project').textContent = proj.name + ' v' + proj.version;
+        document.getElementById('st-count').textContent = count.toString();
+        document.getElementById('st-users').textContent = addrs.length;
+        document.getElementById('st-points').textContent = total;
+        const tb = document.getElementById('board-body');
+        const rows = addrs.sort((a, b) => Number(board[b]) - Number(board[a]));
+        tb.innerHTML = rows.length ? rows.map((a, i) => `<tr><td>${i + 1}</td><td class="mono">${shortAddr(a)}</td><td>${board[a].toString()}</td></tr>`).join('')
+            : '<tr><td colspan="3">No contributors yet.</td></tr>';
+        setStatus('Connected to studionet.', 'ok');
+        // per-topic card counts
+        for (const t of ['Web', 'AI', 'Crypto']) {
+            try {
+                const r = await c.readContract({ address: CONTRACT_ADDR, abi: ABI_TOPIC, functionName: 'get_entries_by_topic', args: [t] });
+                document.getElementById('count-' + t.toLowerCase()).textContent = r.count.toString() + ' entries';
+            } catch (e) { /* leave placeholder */ }
+        }
+    } catch (e) { setStatus('Chain read failed: ' + e.message.split('\n')[0], 'err'); }
+}
+document.getElementById('btn-refresh').addEventListener('click', loadStats);
+
+document.getElementById('btn-explore').addEventListener('click', async () => {
+    const list = document.getElementById('exp-list');
+    list.innerHTML = 'Loading…';
+    try {
+        const c = await gl();
+        const topic = document.getElementById('exp-topic').value.trim() || 'Web';
+        const r = await c.readContract({ address: CONTRACT_ADDR, abi: ABI_TOPIC, functionName: 'get_entries_by_topic', args: [topic] });
+        if (!r.ids.length) { list.innerHTML = 'No entries for this topic yet.'; return; }
+        list.innerHTML = '';
+        for (const id of r.ids) {
+            const e = await c.readContract({ address: CONTRACT_ADDR, abi: ABI_GET, functionName: 'get_entry', args: [String(id)] });
+            const d = document.createElement('div');
+            d.className = 'entry-card';
+            d.innerHTML = `<span class="tag ${e.status === 'verified' ? '' : 'rejected'}">${e.status}</span><b>#${e.id} · score ${e.score}</b><br>${e.summary}<br><span class="mono">${e.url}</span><br><i>${e.analysis || 'awaiting verification'}</i>`;
+            list.appendChild(d);
+        }
+    } catch (e) { list.innerHTML = 'Explore failed: ' + e.message.split('\n')[0]; }
+});
+
+let lastEntryId = null;
+function txMsg(msg, cls) { const el = document.getElementById('tx-status'); el.textContent = msg; el.className = 'status' + (cls ? ' ' + cls : ''); }
+document.getElementById('btn-submit').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-submit');
+    txMsg('Submitting…');
+    btn.disabled = true;
+    try {
+        const c = await gl();
+        const key = document.getElementById('f-key').value.trim();
+        if (!key.startsWith('0x')) throw new Error('Paste a burner private key (0x…) first.');
+        const account = glAccountLib(key);
+        const tx = await c.writeContract({ account, address: CONTRACT_ADDR, abi: ABI_SUBMIT, functionName: 'submit_entry',
+            args: [document.getElementById('f-topic').value.trim(), document.getElementById('f-url').value.trim(), document.getElementById('f-summary').value.trim()] });
+        txMsg('Submitted: ' + tx + ' — waiting for finalization…');
+        await c.waitForTransactionReceipt({ hash: tx, status: 'FINALIZED', timeout: 180000, interval: 5000 });
+        const count = await c.readContract({ address: CONTRACT_ADDR, abi: ABI_COUNT, functionName: 'get_count', args: [] });
+        lastEntryId = (Number(count) - 1).toString();
+        txMsg('Entry #' + lastEntryId + ' stored. You can now verify it.', 'ok');
+        document.getElementById('btn-verify').disabled = false;
+        loadStats();
+    } catch (e) { txMsg('Submit failed: ' + e.message.split('\n')[0], 'err'); }
+    btn.disabled = false;
+});
+document.getElementById('btn-verify').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-verify');
+    if (lastEntryId === null) return;
+    txMsg('Verifying entry #' + lastEntryId + ' — AI consensus takes minutes…');
+    btn.disabled = true;
+    try {
+        const c = await gl();
+        const key = document.getElementById('f-key').value.trim();
+        const account = glAccountLib(key);
+        const tx = await c.writeContract({ account, address: CONTRACT_ADDR, abi: ABI_VERIFY, functionName: 'verify_entry', args: [lastEntryId] });
+        txMsg('Verify tx: ' + tx + ' — waiting…');
+        await c.waitForTransactionReceipt({ hash: tx, status: 'FINALIZED', timeout: 600000, interval: 15000 });
+        const e = await c.readContract({ address: CONTRACT_ADDR, abi: ABI_GET, functionName: 'get_entry', args: [lastEntryId] });
+        txMsg(`Entry #${lastEntryId}: ${e.status} (score ${e.score}). ${e.analysis}`, e.status === 'verified' ? 'ok' : '');
+        loadStats();
+    } catch (e) { txMsg('Verify failed: ' + e.message.split('\n')[0], 'err'); }
+    btn.disabled = false;
+});
+
+loadStats();
+</script>
+</body>
+</html>

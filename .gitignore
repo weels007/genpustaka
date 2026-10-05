@@ -1,0 +1,25 @@
+# Python / GenLayer test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+artifacts/
+
+# Node
+node_modules/
+frontend/.next/
+frontend/out/
+
+# Env & secrets (wallet keys live OUTSIDE this repo — never commit them)
+.env
+.env.*
+*.key.json
+*-key.json
+keystore*.json
+
+# OS / logs
+.DS_Store
+Thumbs.db
+*.log
+
+# Temp
+CACHEDIR.TAG
