@@ -76,18 +76,13 @@ forces agreement), and the verdict must be bound to the submitted `source_url`.
 
 ## 🚀 Deployment
 
-Network: **GenLayer studionet** (final — no Bradbury). Wallet: `cpe-deploy`
-(`0xD0B8fFA6ea2572D2a8F16512CAbB21eCFe6ea48b`).
+Network: **GenLayer studionet**.
 
-| Version | Address | Notes |
-|---|---|---|
-| v7 (**active**, `PROJECT_VERSION` 6) | `0x4941960FFa8188008Def7536A3cBf95Abd156369` | Flexible stake (min 10 wei), 19 methods |
+**Contract:** `0x4941960FFa8188008Def7536A3cBf95Abd156369`
+([view in explorer](https://explorer-studio.genlayer.com/address/0x4941960FFa8188008Def7536A3cBf95Abd156369))
 
-Retired on-chain versions (v1–v6) remain on studionet forever — blockchain
-history cannot be deleted — but nothing in this repo points to them anymore.
-
-Full live-test history (all versions, every tx hash) is preserved in `AGENTS.md`.
-Explore the active contract above — `get_project` answers `GenPustaka v6`.
+Deploys and writes use the project's private deployer wallet (kept out of this
+repo). `get_project` answers `GenPustaka`.
 
 > Each `emit_transfer` spawns one child tx (`from` = contract,
 > `triggered_on: finalized`) — that is the payout arriving, not a double spend.
@@ -132,7 +127,7 @@ own MetaMask/Rabby wallet.
 genvm-lint check contracts/genpustaka.py   # must pass, pinned runner
 pytest tests/direct/ -v                    # 21 tests: consensus, adversarial, tokenomics
 gltest tests/integration/ -v -s            # smoke (uses ephemeral accounts)
-node scripts/e2e-test.cjs                  # live studionet flow (cpe-deploy key)
+node scripts/e2e-test.cjs                  # live studionet flow (deployer key)
 ```
 
 Notes: the CLI has no `--value` flag — payable calls go through `scripts/`;

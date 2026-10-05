@@ -14,7 +14,7 @@ export default function ContractPage() {
       try {
         const [proj, count, cfg] = await Promise.all([fetchProject(), fetchCount(), fetchConfig()]);
         setInfo({
-          name: proj.name, version: proj.version, count: count.toString(),
+          name: proj.name, count: count.toString(),
           pool: cfg.pool.toString(), balance: cfg.balance.toString(),
           stake: cfg.min_stake.toString(), rate: cfg.reward_per_point.toString(),
           fee: cfg.appeal_fee.toString(), cap: cfg.max_pending.toString(),
@@ -44,7 +44,7 @@ export default function ContractPage() {
           <h2>Contract</h2>
           <p className="sub">GenPustaka intelligent contract (GenLayer studionet).</p>
           <div className="stat-grid">
-            <div className="stat"><div className="k">PROJECT</div><div className="v">{info ? `${info.name} v${info.version}` : "…"}</div></div>
+            <div className="stat"><div className="k">PROJECT</div><div className="v">{info ? info.name : "…"}</div></div>
             <div className="stat"><div className="k">ENTRIES</div><div className="v">{info?.count || "…"}</div></div>
             <div className="stat"><div className="k">REWARD POOL</div><div className="v">{info ? `${info.pool} wei` : "…"}</div></div>
             <div className="stat"><div className="k">CONTRACT BALANCE</div><div className="v">{info ? `${info.balance} wei` : "…"}</div></div>

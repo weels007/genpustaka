@@ -12,7 +12,7 @@
 * **Tema docs asli:** `Crowd-sourced Knowledge Database — Implement a system where users are rewarded for finding and summarizing new information on various topics, building a comprehensive knowledge base.`
 * **Lokasi:** `D:\Genlayer-project\weels\Crowd-sourced-Knowledge-Database`
 * **Bahasa komunikasi:** Indonesia. Bahasa kode/komentar: Inggris.
-* **Jaringan: `studionet` FINAL** (keputusan 2026-10-04 — testnet yang berfungsi baik; tidak ke `testnet-bradbury`). `localnet` hanya untuk debug berat bila perlu.
+* **Jaringan: `studionet`.**
 
 ## 2. Tujuan
 
@@ -151,7 +151,7 @@ AGENTS.md (file ini)
 | 2026-10-04 | Frontend v5: `waitFinalizedChecked` (tolak FINALIZED-tapi-rollback), `findMyEntry` (scan author+URL, bukan `count-1`), Explorer tab dinamis dari `get_topics` + My via `by_author` + tombol Cancel milik sendiri, ABI `appeals` | Build OK, serve 200. E2E ke v5 hijau penuh: submit OK, verify ACCEPTED skor 9 verified, balance 9, semua decode OK |
 | 2026-10-04 | Appeal UI: tombol Verify/Cancel (pending milik sendiri) + Appeal fee 2 (rejected milik sendiri) di kartu Explorer + badge `appealed ×N` | `act()` generik (cancel/appeal/verify via wallet + `waitFinalizedChecked`), tombol tak bocor saat SSR/belum connect. Build OK, serve 200 |
 | 2026-10-04 | Fase 3 tokenomics (kontrak `0xf799...`, PROJECT_VERSION 5): riset docs value-transfers (payable/`gl.message.value`/`emit_transfer`/`self.balance`, eksternal hanya `on=finalized`) + `stake_for` 100 wei / slash-ke-pool / refund-accept+cancel / `claim_gen` 10 wei-pt / `fund_pool` / `withdraw_pool` owner-only / `get_pool`+`get_config` | `genvm-lint` OK (19 methods), `pytest` 21 passed (tokenomics: exact-stake, slash, claim, withdraw-owner, cancel-refund). Live cpe-deploy (saldo ±1150 wei): stake escrow 100, fund pool 200, cancel refund (message value 100), withdraw 50 → pool 150. CLI tanpa flag `--value` → payable via JS. E2E hijau: stake PASSED, verify ACCEPTED skor 8 (refund path), balance 8. Claim live: `claim_gen(1)` 5/5 AGREE → pool 140, balance 7, message 10 wei. Konservasi dana live: wallet 1150→1010 wei + kontrak 140 = 1150 pas (stake+fund−refund−withdraw−claim). Studionet = testnet final, nilai GEN tak dipersoalkan. Catatan explorer: tiap `emit_transfer` memunculkan 1 child-tx (from=kontrak, `triggered_on=finalized`, `value_credited:true`, tanpa konsensus) — mis. `0x9095...` = refund cancel 100 wei, `0x6dae...` = withdraw 50 wei. Itu BUKAN double payout |
-| 2026-10-04 | Keputusan jaringan: tetap di `studionet`, tidak ke Bradbury | Studionet terbukti stabil untuk semua kebutuhan (deploy, konsensus LLM, e2e). §1 AGENTS.md dikunci |
+| 2026-10-04 | Keputusan jaringan: tetap di `studionet` | §1 AGENTS.md dikunci |
 | 2026-10-04 | README.md root final (cara kerja, struktur, quickstart, keputusan jujur, tabel tx kunci) | Dokumentasi presentasi project |
 | 2026-10-04 | README ditulis ulang Inggris modern (logo, badge, How-it-works, tabel kontrak, deployment+versi, dApp, tx kunci) | Gantikan versi Indonesia singkat |
 | 2026-10-04 | Stake fleksibel: `MIN_STAKE` 10 wei, bukan nominal pas (balance user beda-beda; stake = confidence bond) | Kontrak PROJECT_VERSION 6 (`0x4941...`): `stake_for` terima ≥10 wei, `get_config.min_stake`; direct 21 passed (stake 250 OK, 5 wei ditolak); live: stake 250 escrow + cancel refund 250; frontend input nominal + stat MIN STAKE; README/badge/deplo table ikut v7. Build OK |

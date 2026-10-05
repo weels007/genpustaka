@@ -158,7 +158,7 @@ export default function Home() {
       const [proj, count, board] = await Promise.all([fetchProject(), fetchCount(), fetchBoard()]);
       const addrs = Object.keys(board);
       const total = addrs.reduce((s, a) => s + Number(board[a]), 0);
-      setStats({ project: `${proj.name} v${proj.version}`, count: count.toString(), users: addrs.length, points: total });
+      setStats({ project: proj.name, count: count.toString(), users: addrs.length, points: total });
       setChainMsg("Connected to studionet."); setChainOk(true);
       const cc = {};
       for (const t of TOPICS) {
