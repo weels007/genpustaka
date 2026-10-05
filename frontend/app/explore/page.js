@@ -11,6 +11,7 @@ import {
   fetchByTopic,
   fetchEntry,
   fetchTopics,
+  shortAddr,
   waitFinalizedChecked,
 } from "../../lib/genlayer";
 
@@ -153,16 +154,25 @@ export default function ExplorePage() {
           </div>
           {list.map((e) => (
             <div key={e.id} className="entry-card">
-              <span className={`tag ${e.status === "verified" ? "" : e.status === "pending" ? "pending" : "rejected"}`}>{e.status}</span>
-              <span className="tag pending" style={{ background: "rgba(255,255,255,0.12)", color: "white" }}>{e.topic}</span>
-              {Number(e.appeals) > 0 && (
-                <span className="tag pending" style={{ background: "rgba(252,211,77,0.2)", color: "#fde68a" }}>appealed ×{e.appeals.toString()}</span>
-              )}
-              {Number(e.stake) > 0 && (
-                <span className="tag pending" style={{ background: "rgba(126,240,212,0.2)", color: "#7ef0d4" }}>staked {e.stake.toString()} wei</span>
-              )}
-              <b>#{e.id} · score {e.score.toString()}</b><br />{e.summary}<br />
-              <span className="mono">{e.url}</span><br /><i>{e.analysis || "awaiting verification"}</i>
+              <div className="entry-head">
+                <span className={`tag ${e.status === "verified" ? "" : e.status === "pending" ? "pending" : "rejected"}`}>{e.status}</span>
+                <span className="tag pending" style={{ background: "rgba(255,255,255,0.12)", color: "white" }}>{e.topic}</span>
+                {Number(e.appeals) > 0 && (
+                  <span className="tag pending" style={{ background: "rgba(252,211,77,0.2)", color: "#fde68a" }}>appealed ×{e.appeals.toString()}</span>
+                )}
+                {Number(e.stake) > 0 && (
+                  <span className="tag pending" style={{ background: "rgba(126,240,212,0.2)", color: "#7ef0d4" }}>staked {e.stake.toString()} wei</span>
+                )}
+                <span className="entry-id">#{e.id}</span>
+              </div>
+              <p className="entry-summary">{e.summary}</p>
+              <div className="entry-meta">
+                <div className="rowline"><span className="lbl2">Source</span><a href={e.url} target="_blank" rel="noreferrer">{e.url}</a></div>
+                <div className="rowline"><span className="lbl2">Author</span><span className="mono">{shortAddr(e.author)}</span></div>
+                <div className="rowline"><span className="lbl2">Score</span><span>{e.score.toString()} / 10</span></div>
+                <div className="score-bar"><span style={{ width: `${Number(e.score) * 10}%` }} /></div>
+              </div>
+              <div className="entry-analysis"><b>AI verdict</b>{e.analysis || "Awaiting verification."}</div>
               {mine(e) && (e.status === "pending" || e.status === "rejected") && (
                 <div className="row">
                   {e.status === "pending" && (

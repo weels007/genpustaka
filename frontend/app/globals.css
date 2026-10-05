@@ -131,7 +131,19 @@ label.lbl { font-size: 0.75rem; color: var(--muted-color); display: block; margi
 .status.err { color: #fca5a5; }
 table.board { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
 table.board td, table.board th { padding: 0.5rem 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
-.entry-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 14px; padding: 1rem; margin-top: 0.8rem; font-size: 0.85rem; }
+.entry-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.2rem 1.3rem; margin-top: 1rem; font-size: 0.88rem; }
+.entry-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+.entry-id { margin-left: auto; font-family: var(--font-outfit), sans-serif; font-weight: 900; font-size: 1rem; opacity: 0.9; }
+.entry-summary { font-size: 1.02rem; line-height: 1.7; margin: 0 0 1rem; font-weight: 500; }
+.entry-meta { display: grid; gap: 0.45rem; margin-bottom: 0.9rem; font-size: 0.83rem; }
+.rowline { display: flex; gap: 0.7rem; align-items: baseline; }
+.lbl2 { color: var(--muted-color); min-width: 64px; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; }
+.entry-meta a { color: var(--pink); word-break: break-all; text-decoration: none; }
+.entry-meta a:hover { text-decoration: underline; }
+.entry-analysis { background: rgba(126,240,212,0.07); border-left: 3px solid var(--pink); border-radius: 0 12px 12px 0; padding: 0.75rem 1rem; font-size: 0.86rem; line-height: 1.65; }
+.entry-analysis b { display: block; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pink); margin-bottom: 0.25rem; }
+.score-bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,0.12); overflow: hidden; margin-top: 0.35rem; }
+.score-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--orb-b), var(--orb-a)); border-radius: 99px; }
 .tag { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.7rem; border-radius: 100px; background: var(--pink); color: var(--pink-ink); font-weight: 700; margin-right: 0.4rem; }
 .tag.rejected { background: rgba(255,255,255,0.15); color: white; }
 .tag.pending { background: rgba(252,211,77,0.25); color: #fde68a; }
