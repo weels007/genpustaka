@@ -94,7 +94,19 @@ export default function ExplorePage() {
       setMsg(`#${id}: ${e.status} (score ${e.score}). ${e.analysis || ""}`);
       await load(tab, topics);
     } catch (e) {
-      setMsg(`${label} failed: ` + String(e.message || e).split("\n")[0]);
+      // Timeout / failure: re-read on-chain truth. Undetermined consensus
+      // changes nothing — the entry stays pending and retryable.
+      try {
+        const cur = await fetchEntry(String(id));
+        if (kind === "verify" && cur.status === "pending") {
+          setMsg(`No consensus reached (undetermined) — #${id} unchanged and still pending. Retry later, or cancel it to free your quota.`);
+        } else {
+          setMsg(`#${id}: ${cur.status} (score ${cur.score}). ${cur.analysis || ""}`);
+        }
+        await load(tab, topics);
+      } catch {
+        setMsg(`${label} failed: ` + String(e.message || e).split("\n")[0]);
+      }
     }
     setActing(null);
   }

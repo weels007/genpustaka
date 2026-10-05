@@ -78,8 +78,23 @@ export default function SubmitPage() {
       setPhase("idle");
       setLastId(null); // no longer pending — prevents double-verify reverts
     } catch (e) {
-      setPhase("submitted"); // still pending, keep verify available
-      setTxMsg("Verify failed: " + String(e.message || e).split("\n")[0]);
+      // Timeout / failure: re-read on-chain truth instead of guessing.
+      // Undetermined consensus = no state change, entry stays pending.
+      try {
+        const cur = await fetchEntry(lastId);
+        if (cur.status === "pending") {
+          setPhase("submitted");
+          setTxMsg(`No consensus reached (undetermined) — entry #${lastId} unchanged and still pending. Retry verify later, or cancel it from Explore.`);
+        } else {
+          setTxMsg(`Entry #${lastId}: ${cur.status} (score ${cur.score}). ${cur.analysis || ""}`);
+          setTxOk(cur.status === "verified");
+          setPhase("idle");
+          setLastId(null);
+        }
+      } catch {
+        setPhase("submitted");
+        setTxMsg("Verify failed: " + String(e.message || e).split("\n")[0]);
+      }
     }
     setBusy(false);
   }
