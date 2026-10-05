@@ -110,6 +110,22 @@ Explore the active contract above — `get_project` answers `GenPustaka v6`.
 cd frontend && npm install && npm run dev   # http://localhost:3000
 ```
 
+### Deploy to Vercel
+
+The Next.js app lives in `frontend/`, so when importing
+[weels007/genpustaka](https://github.com/weels007/genpustaka) into Vercel set:
+
+| Setting | Value |
+|---|---|
+| Framework Preset | Next.js (auto-detected) |
+| **Root Directory** | `frontend` |
+| Build Command | `npm run build` (default) |
+| Output Directory | default (`.next`) |
+| Environment Variables | none required |
+
+No secrets are needed: reads are public and writes are signed in the user's
+own MetaMask/Rabby wallet.
+
 ## 🛠️ Development
 
 ```bash
