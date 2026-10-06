@@ -158,8 +158,20 @@ export default function DashboardPage() {
           <div className="panel">
             <h2>Claim GEN rewards</h2>
             <p className="sub">Burn points for GEN from the reward pool. Rate: {formatWeiToGen(REWARD_PER_POINT_WEI)} GEN per point.</p>
+            <div className="stat" style={{ marginBottom: "1rem" }}>
+              <div className="k">YOUR POINTS (CONVERTIBLE)</div>
+              <div className="v">{stats?.points == null ? "…" : `${stats.points} pts ≈ ${formatWeiToGen(BigInt(stats.points) * REWARD_PER_POINT_WEI)} GEN`}</div>
+            </div>
             <div className="row">
               <input value={claimAmt} onChange={(e) => setClaimAmt(e.target.value)} placeholder="Points" inputMode="numeric" style={{ maxWidth: 160 }} />
+              <button
+                type="button"
+                className="btn ghost"
+                disabled={claiming || stats?.points == null || stats.points === "0"}
+                onClick={() => setClaimAmt(stats?.points ?? "")}
+              >
+                Max
+              </button>
               <button type="button" className="btn" disabled={claiming} onClick={onClaim}>
                 {claiming ? "Claiming…" : "Claim GEN"}
               </button>
@@ -181,7 +193,7 @@ export default function DashboardPage() {
                   <span className="tag pending" style={{ background: "rgba(252,211,77,0.2)", color: "#fde68a" }}>appealed ×{e.appeals.toString()}</span>
                 )}
                 {Number(e.stake) > 0 && (
-                  <span className="tag pending" style={{ background: "rgba(126,240,212,0.2)", color: "#7ef0d4" }}>staked {e.stake.toString()} wei</span>
+                  <span className="tag pending" style={{ background: "rgba(126,240,212,0.2)", color: "#7ef0d4" }}>staked {formatWeiToGen(e.stake)} GEN</span>
                 )}
                 <span className="entry-id">#{e.id}</span>
               </div>
