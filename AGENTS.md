@@ -183,6 +183,7 @@ AGENTS.md (file ini)
   * Pasca-verify: `get_entry` = verified/score 8 + analysis, `get_balance` = 8, `get_leaderboard` = `{cpe-deploy: 8}`
 * `gltest.config.yaml` final: keys valid = `paths/networks/environment` (bukan `contract_path`); network cukup `{}`, jangan `null`; tanpa `${ACCOUNT_PRIVATE_KEY_1}` bila env tidak ada.
 * Artefak: `scripts/deploy.json`, `scripts/deploy.cjs`, `scripts/e2e-test.cjs`, `scripts/payable-test.cjs` (semua pakai `cpe-deploy-key.json`), `tests/integration/test_knowledge.py`.
+* **Checklist tiap redeploy (wajib semua):** `frontend/lib/genlayer.js` (CONTRACT_ADDR) → `scripts/deploy.json` → README (badge+alamat) → `notes/portal-submission.md` (contract link) → build+push. Alamat lama hanya boleh tersisa sebagai riwayat di log AGENTS.md.
 
 ## 8. Definisi Selesai (DoD) MVP
 * [x] `genvm-lint check` lolos tanpa error

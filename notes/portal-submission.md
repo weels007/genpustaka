@@ -40,4 +40,4 @@ Re-submitting the same URL (even with ?query variants) reverts with
 [EXPECTED] URL already submitted. Submit and verify are gasless; staking needs
 studionet GEN from the Studio faucet.
 
-Contract: https://explorer-studio.genlayer.com/address/0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1
+Contract: https://explorer-studio.genlayer.com/address/0x8556f5c750D7508D20CaF94C43a4dA009F362dfc
