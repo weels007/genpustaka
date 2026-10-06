@@ -99,7 +99,7 @@ export default function ExplorePage() {
         ...(kind === "stake" ? { value } : {}),
       });
       setMsg(`${label} #${id} (${tx}) — waiting for FINALIZED…`);
-      await waitFinalizedChecked(tx, kind === "verify" ? 600000 : 180000);
+      await waitFinalizedChecked(tx, kind === "verify" ? 900000 : 600000);
       const e = await fetchEntry(String(id));
       setMsg(`#${id}: ${e.status} (score ${e.score}). ${e.analysis || ""}`);
       await load(tab, topics);

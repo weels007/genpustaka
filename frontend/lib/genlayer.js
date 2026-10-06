@@ -119,7 +119,7 @@ export async function waitFinalized(hash, timeout = 600000) {
 // call (e.g. duplicate URL, under-min stake) also finalizes. Always confirm
 // execution via BOTH the execution-result flag AND the leader receipt,
 // because simplified receipts may omit either field.
-export async function waitFinalizedChecked(hash, timeout = 600000) {
+export async function waitFinalizedChecked(hash, timeout = 900000) {
   const receipt = await getClient().waitForTransactionReceipt({ hash, status: "FINALIZED", timeout, interval: 5000, fullTransaction: true });
   const exec = receipt?.txExecutionResultName;
   if (exec && exec !== ExecutionResult.FINISHED_WITH_RETURN && exec !== "FINISHED_WITH_RETURN") {

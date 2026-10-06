@@ -49,7 +49,7 @@ export default function SubmitPage() {
       const s = await signer();
       const tx = await s.send("submit_entry", ABIS.submit, [form.topic.trim(), form.url.trim(), form.summary.trim()]);
       setTxMsg(`Submitted via ${s.label}: ${tx} — waiting for finalization…`);
-      await waitFinalizedChecked(tx, 180000);
+      await waitFinalizedChecked(tx, 600000);
       const count = await fetchCount();
       const id = await findMyEntry(s.address.toLowerCase(), form.url.trim(), count);
       if (!id) throw new Error("Finalized, but your entry was not found (execution may have rolled back — e.g. duplicate URL).");

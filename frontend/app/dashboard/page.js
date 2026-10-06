@@ -107,11 +107,11 @@ export default function DashboardPage() {
     if (!pts || pts <= 0) { setClaimMsg("Enter a positive point amount."); return; }
     setClaiming(true);
     const preview = formatWeiToGen(BigInt(pts) * REWARD_PER_POINT_WEI);
-    setClaimMsg(`Claiming ${pts} pts → ${preview} GEN…`);
+    setClaimMsg(`Claiming ${pts} pts → ${preview} GEN… (can take several minutes when the network is busy — do not close this page)`);
     try {
       const client = await getWriteClient();
       const tx = await client.writeContract({ address: CONTRACT_ADDR, abi: ABIS.claim, functionName: "claim_gen", args: [BigInt(pts)] });
-      await waitFinalizedChecked(tx, 180000);
+      await waitFinalizedChecked(tx, 600000);
       setClaimMsg(`Claimed ${pts} pts for ${preview} GEN.`);
       setClaimAmt("");
       await load();
