@@ -1,7 +1,7 @@
 # Portal submission — GenPustaka (draf isian form)
 
 ## Tags
-Primary: AI & Agent (source verification) · 2: identity/reputation · 3: other (dataset verification)
+Primary: AI & Agent · 2: source verification · 3: multi-agent coordination
 
 ## 02 · One-liner (≤180)
 A crowd-sourced knowledge base where AI validators verify every submission and contributors earn rewards.
