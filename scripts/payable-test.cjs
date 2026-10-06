@@ -1,6 +1,12 @@
 const { createClient, chains, createAccount } = require("genlayer-js");
 const fs = require("fs");
 
+function loadWalletKey() {
+  const p = process.env.WALLET_KEY_JSON;
+  if (!p) throw new Error("Set WALLET_KEY_JSON env to the deployer key JSON path.");
+  return JSON.parse(fs.readFileSync(p, "utf8"));
+}
+
 const CONTRACT = "0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1";
 const STR = { type: "string", name: "" };
 const U256 = { type: "uint256", name: "" };
@@ -17,8 +23,8 @@ async function checked(client, hash, timeout = 180000) {
 }
 
 async function main() {
-  const w = JSON.parse(fs.readFileSync("D:\\Genlayer-project\\weels\\contract\\wallet\\cpe-deploy-key.json", "utf8"));
-  const account = createAccount(w.privateKey);
+  const w = loadWalletKey();
+  const account = createAccount(w.privateKey || w.private_key);
   const client = createClient({ chain: chains.studionet, account });
   console.log("Account:", account.address, "Contract:", CONTRACT);
 

@@ -1,5 +1,11 @@
 const { createClient, chains, createAccount } = require("genlayer-js");
 const fs = require("fs");
+
+function loadWalletKey() {
+  const p = process.env.WALLET_KEY_JSON;
+  if (!p) throw new Error("Set WALLET_KEY_JSON env to the deployer key JSON path.");
+  return JSON.parse(fs.readFileSync(p, "utf8"));
+}
 const path = require("path");
 
 const DEPLOY = JSON.parse(fs.readFileSync(path.join(__dirname, "deploy.json"), "utf8"));
@@ -21,10 +27,8 @@ const ABI_COUNT = [{ inputs: [], name: "get_count", outputs: [{ internalType: "u
 const ABI_PROJECT = [{ inputs: [], name: "get_project", outputs: [{ internalType: "string", name: "name", type: "string" }, { internalType: "string", name: "version", type: "string" }], stateMutability: "view", type: "function" }];
 
 async function main() {
-  const w = JSON.parse(
-    fs.readFileSync("D:\\Genlayer-project\\weels\\contract\\wallet\\cpe-deploy-key.json", "utf8")
-  );
-  const account = createAccount(w.privateKey);
+  const w = loadWalletKey();
+  const account = createAccount(w.privateKey || w.private_key);
   const client = createClient({ chain: chains.studionet });
 
   console.log("=== GenPustaka E2E ===");

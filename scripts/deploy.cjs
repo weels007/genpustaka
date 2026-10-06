@@ -1,14 +1,18 @@
 const { createClient, chains, createAccount } = require("genlayer-js");
 const fs = require("fs");
+
+function loadWalletKey() {
+  const p = process.env.WALLET_KEY_JSON;
+  if (!p) throw new Error("Set WALLET_KEY_JSON env to the deployer key JSON path.");
+  return JSON.parse(fs.readFileSync(p, "utf8"));
+}
 const path = require("path");
 
 const CODE = fs.readFileSync(path.join(__dirname, "..", "contracts", "genpustaka.py"), "utf8");
 
 async function main() {
-  const w = JSON.parse(
-    fs.readFileSync("D:\\Genlayer-project\\weels\\contract\\wallet\\cpe-deploy-key.json", "utf8")
-  );
-  const account = createAccount(w.privateKey);
+  const w = loadWalletKey();
+  const account = createAccount(w.privateKey || w.private_key);
   const client = createClient({ chain: chains.studionet });
 
   console.log("Deploying GenPustaka from", account.address);
