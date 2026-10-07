@@ -5,8 +5,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useWallet } from "../../lib/wallet";
 import {
-  ABIS,
-  CONTRACT_ADDR,
   MIN_STAKE_WEI,
   fetchByAuthor,
   fetchByTopic,
@@ -16,6 +14,7 @@ import {
   parseGenToWei,
   shortAddr,
   waitFinalizedChecked,
+  writeWith,
 } from "../../lib/genlayer";
 
 // Submit form only allows these topics, so they always exist as tabs —
@@ -93,11 +92,7 @@ export default function ExplorePage() {
     try {
       const client = await getWriteClient();
       const fn = kind === "cancel" ? "cancel_entry" : kind === "appeal" ? "appeal_entry" : kind === "stake" ? "stake_for" : "verify_entry";
-      const abi = kind === "cancel" ? ABIS.cancel : kind === "appeal" ? ABIS.appeal : kind === "stake" ? ABIS.stake : ABIS.verify;
-      const tx = await client.writeContract({
-        address: CONTRACT_ADDR, abi, functionName: fn, args: [String(id)],
-        ...(kind === "stake" ? { value } : {}),
-      });
+      const tx = await writeWith(client, fn, [String(id)], kind === "stake" ? value : null);
       setMsg(`${label} #${id} (${tx}) — waiting for FINALIZED…`);
       await waitFinalizedChecked(tx, kind === "verify" ? 900000 : 600000);
       const e = await fetchEntry(String(id));

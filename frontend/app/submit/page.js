@@ -6,12 +6,11 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useWallet } from "../../lib/wallet";
 import {
-  ABIS,
-  CONTRACT_ADDR,
   fetchCount,
   fetchEntry,
   findMyEntry,
   waitFinalizedChecked,
+  writeWith,
 } from "../../lib/genlayer";
 
 export default function SubmitPage() {
@@ -28,8 +27,7 @@ export default function SubmitPage() {
     if (!walletAddr) throw new Error("Connect a wallet from the header first.");
     const client = await getWriteClient();
     return {
-      send: (functionName, abi, args) =>
-        client.writeContract({ address: CONTRACT_ADDR, abi, functionName, args }),
+      send: (functionName, args) => writeWith(client, functionName, args),
       label: `${providerName || "wallet"} (${walletAddr.slice(0, 6)}…${walletAddr.slice(-4)})`,
       address: walletAddr,
     };
@@ -47,7 +45,7 @@ export default function SubmitPage() {
     try {
       validInput();
       const s = await signer();
-      const tx = await s.send("submit_entry", ABIS.submit, [form.topic.trim(), form.url.trim(), form.summary.trim()]);
+      const tx = await s.send("submit_entry", [form.topic.trim(), form.url.trim(), form.summary.trim()]);
       setTxMsg(`Submitted via ${s.label}: ${tx} — waiting for finalization…`);
       await waitFinalizedChecked(tx, 600000);
       const count = await fetchCount();
@@ -70,7 +68,7 @@ export default function SubmitPage() {
     setTxMsg(`Verifying entry #${lastId} — AI consensus takes minutes, do not close this page…`);
     try {
       const s = await signer();
-      const tx = await s.send("verify_entry", ABIS.verify, [lastId]);
+      const tx = await s.send("verify_entry", [lastId]);
       setTxMsg(`Verify tx via ${s.label}: ${tx} — waiting for FINALIZED…`);
       await waitFinalizedChecked(tx);
       const e = await fetchEntry(lastId);

@@ -5,8 +5,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useWallet } from "../../lib/wallet";
 import {
-  ABIS,
-  CONTRACT_ADDR,
   REWARD_PER_POINT_WEI,
   fetchBalance,
   fetchByAuthor,
@@ -15,6 +13,7 @@ import {
   formatWeiToGen,
   shortAddr,
   waitFinalizedChecked,
+  writeWith,
 } from "../../lib/genlayer";
 
 export default function DashboardPage() {
@@ -78,10 +77,9 @@ export default function DashboardPage() {
     try {
       const client = await getWriteClient();
       const fn = kind === "cancel" ? "cancel_entry" : kind === "appeal" ? "appeal_entry" : "verify_entry";
-      const abi = kind === "cancel" ? ABIS.cancel : kind === "appeal" ? ABIS.appeal : ABIS.verify;
-      const tx = await client.writeContract({ address: CONTRACT_ADDR, abi, functionName: fn, args: [String(id)] });
+      const tx = await writeWith(client, fn, [String(id)]);
       setMsg(`${label} #${id} (${tx}) — waiting for FINALIZED…`);
-      await waitFinalizedChecked(tx, kind === "verify" ? 600000 : 180000);
+      await waitFinalizedChecked(tx, kind === "verify" ? 900000 : 600000);
       const e = await fetchEntry(String(id));
       setMsg(`#${id}: ${e.status} (score ${e.score}). ${e.analysis || ""}`);
       await load();
@@ -110,7 +108,7 @@ export default function DashboardPage() {
     setClaimMsg(`Claiming ${pts} pts → ${preview} GEN… (can take several minutes when the network is busy — do not close this page)`);
     try {
       const client = await getWriteClient();
-      const tx = await client.writeContract({ address: CONTRACT_ADDR, abi: ABIS.claim, functionName: "claim_gen", args: [BigInt(pts)] });
+      const tx = await writeWith(client, "claim_gen", [BigInt(pts)]);
       await waitFinalizedChecked(tx, 600000);
       setClaimMsg(`Claimed ${pts} pts for ${preview} GEN.`);
       setClaimAmt("");

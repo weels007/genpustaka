@@ -8,12 +8,6 @@ function loadWalletKey() {
 }
 
 const CONTRACT = "0x25D703dF04f39588BaF2aa6FCf972BB9af71E9b1";
-const STR = { type: "string", name: "" };
-const U256 = { type: "uint256", name: "" };
-const ABI_STAKE = [{ inputs: [{ ...STR, name: "entry_id" }], name: "stake_for", outputs: [STR], stateMutability: "nonpayable", type: "function" }];
-const ABI_FUND = [{ inputs: [], name: "fund_pool", outputs: [U256], stateMutability: "nonpayable", type: "function" }];
-const ABI_POOL = [{ inputs: [], name: "get_pool", outputs: [U256], stateMutability: "view", type: "function" }];
-const ABI_CONFIG = [{ inputs: [], name: "get_config", outputs: [STR], stateMutability: "view", type: "function" }];
 
 async function checked(client, hash, timeout = 180000) {
   const r = await client.waitForTransactionReceipt({ hash, status: "FINALIZED", timeout, interval: 5000, fullTransaction: true });
@@ -29,11 +23,11 @@ async function main() {
   console.log("Account:", account.address, "Contract:", CONTRACT);
 
   console.log("\n[1] stake_for(0) + 0.02 GEN");
-  let tx = await client.writeContract({ address: CONTRACT, abi: ABI_STAKE, functionName: "stake_for", args: ["0"], value: 20000000000000000n });
+  let tx = await client.writeContract({ address: CONTRACT, functionName: "stake_for", args: ["0"], value: 20000000000000000n });
   console.log("  TX:", tx);
   await checked(client, tx);
 
-  let cfg = await client.readContract({ address: CONTRACT, abi: ABI_CONFIG, functionName: "get_config", args: [] });
+  let cfg = await client.readContract({ address: CONTRACT, functionName: "get_config", args: [] });
   console.log("  contract balance:", cfg.balance.toString(), "wei | pool:", cfg.pool.toString(), "| min_stake:", cfg.min_stake.toString());
   console.log("  " + (cfg.balance.toString() === "20000000000000000" ? "PASSED (0.02 GEN escrowed)" : "FAILED"));
 
